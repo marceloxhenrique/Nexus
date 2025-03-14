@@ -4,22 +4,37 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+* {
+  @apply transition-colors duration-300;
+}
+
+
 @theme {
-  --color-primary: #242424;
-  --color-secondary: #ffffff;
+  --color-primary: #181610;
+  --color-secondary: #f7f4ed;
+
   --color-background: #f7f4ed;
+
+  --color-text-main: #181610;
+  --color-text-light: #6b6b6b;
 
   --font-main: "Roboto Flex", sans-serif;
   --font-secondary: "IBM Plex Serif", serif;
 }
 
 .dark {
-  --color-primary: #ffffff;
-  --color-secondary: #242424;
-  --color-background: #242424;
+  --color-primary: #f7f4ed;
+  --color-secondary: #181610;
+
+  --color-background: #1f1e1d;
+
+  --color-text-main: #f7f4ed;
+  --color-text-light: #c8c8c8;
 }
 
 body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* #f7f4ed #5f5c56 #181610 #faf7f0 #201e19 */
