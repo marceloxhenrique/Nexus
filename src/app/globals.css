@@ -8,6 +8,11 @@
   @apply transition-colors duration-300;
 }
 
+h1,
+h2,
+p {
+  @apply transition-colors duration-50;
+}
 
 @theme {
   --color-primary: #181610;
