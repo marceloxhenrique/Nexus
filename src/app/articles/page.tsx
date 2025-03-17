@@ -9,10 +9,6 @@ const page = () => {
         <ArticleCard article={article2}></ArticleCard>
         <ArticleCard article={article}></ArticleCard>
         <ArticleCard article={article2}></ArticleCard>
-        <ArticleCard article={article2}></ArticleCard>
-        <ArticleCard article={article}></ArticleCard>
-        <ArticleCard article={article2}></ArticleCard>
-        <ArticleCard article={article}></ArticleCard>
       </section>
     </div>
   );
