@@ -6,8 +6,8 @@ const ArticleCard = ({ article }: { article: Article }) => {
       <div className="my-8 flex max-w-3xl cursor-pointer flex-col items-start justify-between gap-2 rounded-md sm:flex-row">
         <section className="flex flex-col gap-2.5">
           <h2 className="text-2xl font-black text-primary">{article.title}</h2>
-          <p className="text-text-light">{article.content}</p>
-          <span className="py-2 text-text-light">
+          <p className="text-custom-text-light">{article.content}</p>
+          <span className="py-2 text-custom-text-light">
             {article.createdAt.toDateString()}
           </span>
         </section>

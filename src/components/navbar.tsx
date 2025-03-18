@@ -1,13 +1,14 @@
 import Link from "next/link";
 import ToggleTheme from "./ToggleTheme";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 export default function Navbar() {
   return (
     <div>
       <nav className="mx-auto flex h-16 flex-row items-center justify-between">
         <Link href="/">
-          <p className="font-secondary text-4xl font-bold text-text-main">
+          <p className="font-secondary text-4xl font-bold text-custom-text-primary">
             Nexus
           </p>
         </Link>
@@ -17,9 +18,9 @@ export default function Navbar() {
           </SignedIn>
           <SignedOut>
             <SignInButton>
-              <button className="h-8 cursor-pointer rounded-lg border-[0.1rem] border-text-light px-2 text-sm text-text-main">
+              <Button className="h-8 rounded-sm px-3 text-xs md:h-9 md:text-base">
                 Sign in
-              </button>
+              </Button>
             </SignInButton>
           </SignedOut>
           <ToggleTheme></ToggleTheme>

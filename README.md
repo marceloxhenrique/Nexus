@@ -4,8 +4,6 @@
 
 # [Nexus](https://)
 
-### Beyond Syntax & Speech
-
 **Nexus** is a modern blogging platform where writers, thinkers, and creators can share their insights and stories with the world. Whether you’re passionate about technology, literature, or personal experiences, Nexus provides a seamless and engaging space for self-expression.
 
 ## Technologies

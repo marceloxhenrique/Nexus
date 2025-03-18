@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="antialiase mx-auto flex min-h-screen max-w-[80rem] flex-col justify-center bg-background px-4 md:px-8">
+        <body className="antialiase mx-auto flex min-h-screen max-w-[80rem] flex-col justify-center bg-custom-background px-4 md:px-8">
           <ThemeProvider>
             <Navbar></Navbar>
             {children}
