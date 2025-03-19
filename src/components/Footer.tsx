@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="flex h-16 max-w-[90rem] px-4">
+    <footer className="flex h-16 w-full px-4">
       <ul className="flex w-[100%] items-end justify-center gap-10 pb-2.5 text-primary">
         <li>
           <a href="" className="text-sm text-primary md:hover:underline">

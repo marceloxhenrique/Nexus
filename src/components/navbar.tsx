@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 export default function Navbar() {
   return (
     <div>
-      <nav className="mx-auto flex h-16 flex-row items-center justify-between">
+      <nav className="mx-auto flex h-16 max-w-[80rem] flex-row items-center justify-between">
         <Link href="/">
           <p className="font-secondary text-4xl font-bold text-custom-text-primary">
             Nexus

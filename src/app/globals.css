@@ -16,27 +16,10 @@ p {
   @apply transition-colors duration-100;
 }
 
-/* @theme {
-  --color-primary: #181610;
-  --color-secondary: #f7f4ed;
-  --color-secondary: #e50707;
-
-  --color-background: #f7f4ed;
-
-  --color-text-main: #181610;
-  --color-text-light: #6b6b6b;
-
-  --font-main: "Roboto Flex", sans-serif;
-  --font-secondary: "IBM Plex Serif", serif;
-} */
-
 :root {
   --color-custom-primary: #181610;
   --color-custom-secondary: #f7f4ed;
-
-
   --color-custom-background: #f7f4ed;
-
   --color-custom-text-primary: #181610;
   --color-custom-text-light: #6b6b6b;
 
@@ -77,9 +60,7 @@ p {
 .dark {
   --color-custom-primary: #f7f4ed;
   --color-custom-secondary: #181610;
-
   --color-custom-background: #1f1e1d;
-
   --color-custom-text-primary: #f7f4ed;
   --color-custom-text-light: #c8c8c8;
 
@@ -162,13 +143,3 @@ p {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
-
-/* @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-} */
