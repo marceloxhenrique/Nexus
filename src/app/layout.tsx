@@ -18,14 +18,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="antialiase mx-auto flex min-h-screen max-w-[80rem] flex-col justify-center bg-background px-4 md:px-8">
+        <body className="analiased bg-custom-background">
           <ThemeProvider>
-            <Navbar></Navbar>
-            {children}
-            <Footer></Footer>
+            <section className="mx-auto flex h-full min-h-screen max-w-[80rem] flex-col px-3">
+              <Navbar></Navbar>
+              {children}
+              <Footer></Footer>
+            </section>
           </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
   );
 }
+// mx-auto flex min-h-screen max-w-[80rem] flex-col justify-center bg-custom-background px-4 antialiased md:px-8

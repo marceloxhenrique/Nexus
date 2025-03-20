@@ -1,14 +1,15 @@
+"use client";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="my-auto h-full flex-col justify-center bg-background">
-      <h1 className="font-secondary text-6xl text-text-main sm:text-7xl md:text-9xl">
+    <main className="flex h-full grow flex-col justify-center bg-custom-background">
+      <h1 className="font-secondary text-6xl text-custom-text-primary sm:text-7xl md:text-9xl">
         <p>Beyond</p>
         <p className="md:inline">Syntax</p>
         <p className="md:inline"> & Speech</p>
       </h1>
-      <h2 className="mt-18 font-main text-[1.4rem] text-text-main">
+      <h2 className="mt-18 font-main text-[1.4rem] text-custom-text-primary">
         Write and share your ideas, experiences, and passions.
       </h2>
       <Link href="/articles">
