@@ -1,6 +1,6 @@
 export default function About() {
   return (
-    <main className="max-w-3xl grow py-12">
+    <main>
       <h1 className="text-3xl font-bold text-custom-text-primary">
         About Nexus
       </h1>

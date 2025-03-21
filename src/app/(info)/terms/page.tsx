@@ -1,6 +1,6 @@
 export default function TermsOfService() {
   return (
-    <main className="max-w-3xl py-12">
+    <main>
       <h1 className="text-3xl font-bold text-custom-text-primary">
         Terms of Service
       </h1>

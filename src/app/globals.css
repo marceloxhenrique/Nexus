@@ -12,14 +12,16 @@
 
 h1,
 h2,
-p {
-  @apply transition-colors duration-100;
+p,
+strong {
+  @apply transition-colors duration-50;
 }
 
 :root {
   --color-custom-primary: #181610;
   --color-custom-secondary: #f7f4ed;
-  --color-custom-background: #f7f4ed;
+  --color-custom-background: #ffffff;
+  --color-custom-background-home: #f7f4ed;
   --color-custom-text-primary: #181610;
   --color-custom-text-light: #6b6b6b;
 
@@ -61,6 +63,7 @@ p {
   --color-custom-primary: #f7f4ed;
   --color-custom-secondary: #181610;
   --color-custom-background: #1f1e1d;
+  --color-custom-background-home: #1f1e1d;
   --color-custom-text-primary: #f7f4ed;
   --color-custom-text-light: #c8c8c8;
 
@@ -106,6 +109,7 @@ p {
   --color-custom-background: var(--color-custom-background);
   --color-custom-text-primary: var(--color-custom-text-primary);
   --color-custom-text-light: var(--color-custom-text-light);
+  --color-custom-background-home: var(--color-custom-background-home);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

@@ -16,19 +16,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="analiased bg-custom-background">
-          <ThemeProvider>
-            <section className="mx-auto flex h-full min-h-screen max-w-[80rem] flex-col px-3">
+    <html lang="en">
+      <body className="analiased">
+        <ThemeProvider>
+          <section className="flex min-h-screen flex-col bg-custom-background-home">
+            <ClerkProvider>
               <Navbar></Navbar>
               {children}
               <Footer></Footer>
-            </section>
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+            </ClerkProvider>
+          </section>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
-// mx-auto flex min-h-screen max-w-[80rem] flex-col justify-center bg-custom-background px-4 antialiased md:px-8
