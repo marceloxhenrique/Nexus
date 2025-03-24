@@ -1,9 +1,9 @@
-import { SignUp } from "@clerk/nextjs";
+import Signup from "@/components/Signup";
 
 export default function Page() {
   return (
     <section className="flex w-full flex-1 items-center justify-center bg-custom-background">
-      <SignUp />
+      <Signup></Signup>
     </section>
   );
 }

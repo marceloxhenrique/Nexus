@@ -3,6 +3,7 @@ import ArticleCard from "@/components/ArticleCard";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { user } from "@/data/User";
+
 import Image from "next/image";
 export default function Profile() {
   const [profilePage, setProfilePage] = useState("articles");
@@ -58,9 +59,9 @@ export default function Profile() {
         </div>
         {profilePage === "articles" ? (
           <section className="flex flex-col gap-4 md:mr-6">
-            {user.articles.map((article, index) => (
+            {/* {user.articles.map((article, index) => (
               <ArticleCard key={index} article={article}></ArticleCard>
-            ))}
+            ))} */}
           </section>
         ) : (
           <section className="flex flex-col gap-4">

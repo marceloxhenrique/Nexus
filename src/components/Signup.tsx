@@ -20,30 +20,31 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 
 const signupSchema = z.object({
-  name: z.string().min(1, { message: "This filed is obligatory" }),
+  name: z.string().min(1, { message: "This field is obligatory" }),
   email: z
     .string()
-    .min(1, { message: "This filed is obligatory" })
+    .min(1, { message: "This field is obligatory" })
     .email("This is not a valid email."),
   password: z
     .string()
+    .min(1, { message: "This field is obligatory" })
     .min(6, { message: "Password must have at list 6 characters" }),
 });
 
 export default function SignupForm() {
   const [displayPassword, setDisplayPassword] = useState(false);
   const [disableFields, setDisableFields] = useState(false);
-  type LoginFormProps = z.infer<typeof signupSchema>;
+  type SignupFormProps = z.infer<typeof signupSchema>;
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<LoginFormProps>({
+  } = useForm<SignupFormProps>({
     resolver: zodResolver(signupSchema),
   });
 
-  const handleLoginform = async (userInfo: LoginFormProps) => {
+  const handleSignupform = async (userInfo: SignupFormProps) => {
     reset();
     console.log(userInfo);
   };
@@ -58,7 +59,7 @@ export default function SignupForm() {
         </CardHeader>
         <CardContent>
           <form
-            onSubmit={handleSubmit((userInfo) => handleLoginform(userInfo))}
+            onSubmit={handleSubmit((userInfo) => handleSignupform(userInfo))}
             noValidate
           >
             <section className="grid gap-3">

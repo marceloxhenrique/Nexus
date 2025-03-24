@@ -22,10 +22,11 @@ import { useState } from "react";
 const loginSchema = z.object({
   email: z
     .string()
-    .min(1, { message: "This filed is obligatory" })
+    .min(1, { message: "This field is obligatory" })
     .email("This is not a valid email."),
   password: z
     .string()
+    .min(1, { message: "This field is obligatory" })
     .min(6, { message: "Password must have at list 6 characters" }),
 });
 

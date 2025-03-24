@@ -1,43 +1,6 @@
-export type UserProps = {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  followers: number;
-  profession: string;
-  role: "user" | "admin" | "editor";
-  bio: string;
-  bioMarkdown?: string;
-  articles: ArticleProps[];
-  socials?: {
-    twitter?: string;
-    github?: string;
-    linkedin?: string;
-    website?: string;
-  };
-  verified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { Article, User } from "@/lib/types";
 
-export type ArticleProps = {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  image?: string;
-  likes: number;
-  views: number;
-  tags: string[];
-  readTime: number;
-  published: boolean;
-  commentsCount: number;
-  authorId: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export const article: ArticleProps = {
+export const article: Article = {
   id: "article-1",
   title: "8 Advanced JavaScript Features to Know",
   slug: "8-advanced-javascript-features",
@@ -56,7 +19,7 @@ export const article: ArticleProps = {
   updatedAt: new Date(),
 };
 
-export const article2: ArticleProps = {
+export const article2: Article = {
   id: "article-2",
   title: "TypeScript: JavaScript With Syntax For Types.",
   slug: "typeScript:-javaScript-with-syntax",
@@ -75,22 +38,18 @@ export const article2: ArticleProps = {
   updatedAt: new Date(),
 };
 
-export const user: UserProps = {
+export const user: User = {
   id: "user-123",
   name: "John Doe",
   email: "johndoe@gmail.com",
+  password: "password",
   avatar: "https://avatar.iran.liara.run/public/47",
-  followers: 15,
+  followers: 0,
   profession: "UX Designer",
   role: "user",
   bio: "Design leader, creative thinker, and user experience strategist.",
   bioMarkdown: "**Design leader**, creative thinker, and UX strategist.",
-  articles: [article, article2, article, article2],
-  socials: {
-    twitter: "https://twitter.com/johndoe",
-    linkedin: "https://linkedin.com/in/johndoe",
-    website: "https://johndoe.com",
-  },
+  socials: ["https://twitter.com/johndoe", "https://github.com/johndoe"],
   verified: true,
   createdAt: new Date(),
   updatedAt: new Date(),

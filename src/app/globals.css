@@ -5,17 +5,11 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@100;300;400;500;600&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
-
+/* 
 * {
-  @apply transition-colors duration-300;
-}
+  @apply transition-colors duration-400;
+} */
 
-h1,
-h2,
-p,
-strong {
-  @apply transition-colors duration-50;
-}
 
 :root {
   --color-custom-primary: #181610;
