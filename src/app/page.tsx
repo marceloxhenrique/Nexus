@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex h-full grow flex-col justify-center bg-custom-background">
+    <main className="mx-auto flex w-full max-w-[80rem] grow flex-col justify-center px-4">
       <h1 className="font-secondary text-6xl text-custom-text-primary sm:text-7xl md:text-9xl">
         <p>Beyond</p>
         <p className="md:inline">Syntax</p>
