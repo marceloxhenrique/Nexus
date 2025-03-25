@@ -41,14 +41,16 @@ yarn install
 Create a `.env` file in the root directory and add your credentials:
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-CLERK_SECRET_KEY=your_clerk_secret
+DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+POSTGRES_USER=johndoe
+POSTGRES_PASSWORD=randompassword
+POSTGRES_DB=mydb
 
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/articles
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+NEXT_BACKEND_URL="http://localhost:3000/api"
+
+BETTER_AUTH_SECRET=YOUR_SECRET
+BETTER_AUTH_URL=http://localhost:3000
 
 ```
 
