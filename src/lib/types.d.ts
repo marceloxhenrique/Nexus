@@ -31,3 +31,12 @@ export type Article = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type ArticleWithAuthor = Article & {
+  author: Pick<Author, "name" | "avatar">;
+};
+
+type Author = {
+  name: string;
+  avatar: string;
+};

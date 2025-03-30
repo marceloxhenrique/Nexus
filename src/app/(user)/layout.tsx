@@ -5,7 +5,7 @@ export default function UserLayout({
 }>) {
   return (
     <section className="flex w-full grow bg-custom-background">
-      <div className="mx-auto w-full max-w-[80rem] grow px-3">{children}</div>
+      <div className="mx-auto w-full max-w-[80rem] grow px-6">{children}</div>
     </section>
   );
 }

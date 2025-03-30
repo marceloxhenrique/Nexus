@@ -12,7 +12,8 @@
 ![ReactJS](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Next_JS](https://img.shields.io/badge/Next.js-000?style=for-the-badge&logo=nextdotjs&logoColor=fff)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Shadcn/ui](https://img.shields.io/badge/shadcn/ui-000?style=for-the-badge&logo=shadcnui&logoColor=fff)
+![Shadcn/ui](https://img.shields.io/badge/shadcn/ui-fff?style=for-the-badge&logo=shadcnui&logoColor=000)
+![Zod](https://img.shields.io/badge/zod-000?style=for-the-badge&logo=zod&logoColor=3068B7)
 
 ## Prerequisites
 
@@ -47,7 +48,7 @@ POSTGRES_USER=johndoe
 POSTGRES_PASSWORD=randompassword
 POSTGRES_DB=mydb
 
-NEXT_BACKEND_URL="http://localhost:3000/api"
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000/api
 
 BETTER_AUTH_SECRET=YOUR_SECRET
 BETTER_AUTH_URL=http://localhost:3000

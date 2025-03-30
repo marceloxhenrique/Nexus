@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="analiased">
+      <body className="analaised">
         <ThemeProvider>
           <section className="flex min-h-screen flex-col bg-custom-background-home">
             <Navbar></Navbar>

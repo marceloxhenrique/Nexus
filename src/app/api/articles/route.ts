@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error while creating new article: ", error);
     return NextResponse.json(
-      { error: "Unable to create article error: " },
+      { error: `Unable to create article error: ${error}` },
       { status: 500 },
     );
   }
