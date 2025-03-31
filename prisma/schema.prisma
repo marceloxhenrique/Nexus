@@ -14,25 +14,26 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  name        String
-  email       String    @unique
-  avatar      String?
-  followers   Int       @default(0)
-  profession  String?
-  role        String    @default("user")
-  bio         String?
-  bioMarkdown String?
-  socials     String[]
-  verified    Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  articles    Article[]
-
-  emailVerified Boolean?
-  image         String?
-  sessions      Session[]
-  accounts      Account[]
+  id             String    @id @default(uuid())
+  name           String
+  email          String    @unique
+  slug           String    @unique
+  avatar         String?
+  followers      Int       @default(0)
+  profession     String?
+  role           String    @default("user")
+  bio            String?
+  bioMarkdown    String?
+  socials        String[]
+  verified       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  articles       Article[] @relation("AuthorIdRelation")
+  articlesBySlug Article[] @relation("UserSlugRelation")
+  emailVerified  Boolean?
+  image          String?
+  sessions       Session[]
+  accounts       Account[]
 
   @@map("user")
 }
@@ -51,8 +52,12 @@ model Article {
   commentsCount Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  author        User     @relation(fields: [authorId], references: [id])
-  authorId      String
+
+  author   User   @relation(name: "AuthorIdRelation", fields: [authorId], references: [id])
+  authorId String
+
+  userSlug   User   @relation(name: "UserSlugRelation", fields: [authorSlug], references: [slug])
+  authorSlug String
 
   @@map("article")
 }

@@ -81,4 +81,5 @@ type CreateArticleInput = {
   readTime: number;
   published: boolean;
   authorId: string;
+  authorSlug: string;
 };

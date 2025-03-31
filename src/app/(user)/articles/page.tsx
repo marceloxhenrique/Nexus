@@ -23,9 +23,10 @@ function Articles() {
         of writers on a variety of topics.
       </p>
       <section className="flex flex-col gap-6 py-18">
-        {articles.map((article) => (
-          <ArticleCard key={article.id} article={article}></ArticleCard>
-        ))}
+        {articles.length > 0 &&
+          articles.map((article) => (
+            <ArticleCard key={article.id} article={article}></ArticleCard>
+          ))}
       </section>
     </main>
   );

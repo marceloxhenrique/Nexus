@@ -183,7 +183,10 @@ export default function SignupForm() {
               </Button>
               <div className="text-center text-sm">
                 Already have an account?
-                <Link href="/sign-in" className="underline underline-offset-4">
+                <Link
+                  href="/sign-in"
+                  className="pl-2 underline underline-offset-4"
+                >
                   Log in
                 </Link>
               </div>
