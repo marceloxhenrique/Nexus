@@ -1,6 +1,7 @@
 export type User = {
   id: string;
   name: string;
+  slug: string;
   email: string;
   password: string;
   avatar?: string;
@@ -30,4 +31,14 @@ export type Article = {
   authorId: string;
   createdAt: Date;
   updatedAt: Date;
+  authorSlug: string;
+};
+
+export type ArticleWithAuthor = Article & {
+  author: Pick<Author, "name" | "avatar">;
+};
+
+type Author = {
+  name: string;
+  avatar: string;
 };

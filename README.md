@@ -12,7 +12,8 @@
 ![ReactJS](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Next_JS](https://img.shields.io/badge/Next.js-000?style=for-the-badge&logo=nextdotjs&logoColor=fff)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Shadcn/ui](https://img.shields.io/badge/shadcn/ui-000?style=for-the-badge&logo=shadcnui&logoColor=fff)
+![Shadcn/ui](https://img.shields.io/badge/shadcn/ui-fff?style=for-the-badge&logo=shadcnui&logoColor=000)
+![Zod](https://img.shields.io/badge/zod-000?style=for-the-badge&logo=zod&logoColor=3068B7)
 
 ## Prerequisites
 
@@ -41,14 +42,16 @@ yarn install
 Create a `.env` file in the root directory and add your credentials:
 
 ```bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-CLERK_SECRET_KEY=your_clerk_secret
+DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+POSTGRES_USER=johndoe
+POSTGRES_PASSWORD=randompassword
+POSTGRES_DB=mydb
 
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/articles
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000/api
+
+BETTER_AUTH_SECRET=YOUR_SECRET
+BETTER_AUTH_URL=http://localhost:3000
 
 ```
 

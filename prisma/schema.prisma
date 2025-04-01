@@ -14,21 +14,28 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  name        String
-  email       String    @unique
-  password    String
-  avatar      String?
-  followers   Int       @default(0)
-  profession  String?
-  role        String    @default("user")
-  bio         String?
-  bioMarkdown String?
-  socials     String[]
-  verified    Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  articles    Article[]
+  id             String    @id @default(uuid())
+  name           String
+  email          String    @unique
+  slug           String    @unique
+  avatar         String?
+  followers      Int       @default(0)
+  profession     String?
+  role           String    @default("user")
+  bio            String?
+  bioMarkdown    String?
+  socials        String[]
+  verified       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  articles       Article[] @relation("AuthorIdRelation")
+  articlesBySlug Article[] @relation("UserSlugRelation")
+  emailVerified  Boolean?
+  image          String?
+  sessions       Session[]
+  accounts       Account[]
+
+  @@map("user")
 }
 
 model Article {
@@ -45,6 +52,57 @@ model Article {
   commentsCount Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  author        User     @relation(fields: [authorId], references: [id])
-  authorId      String
+
+  author   User   @relation(name: "AuthorIdRelation", fields: [authorId], references: [id])
+  authorId String
+
+  userSlug   User   @relation(name: "UserSlugRelation", fields: [authorSlug], references: [slug])
+  authorSlug String
+
+  @@map("article")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }

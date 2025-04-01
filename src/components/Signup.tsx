@@ -18,6 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { api } from "@/utils/api";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const signupSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
@@ -32,6 +35,7 @@ const signupSchema = z.object({
 });
 
 export default function SignupForm() {
+  const route = useRouter();
   const [displayPassword, setDisplayPassword] = useState(false);
   const [disableFields, setDisableFields] = useState(false);
   type SignupFormProps = z.infer<typeof signupSchema>;
@@ -45,8 +49,28 @@ export default function SignupForm() {
   });
 
   const handleSignupform = async (userInfo: SignupFormProps) => {
-    reset();
-    console.log(userInfo);
+    const { email, password, name } = userInfo;
+    const { data, error } = await authClient.signUp.email(
+      {
+        email,
+        password,
+        name,
+        callbackURL: "/articles",
+      },
+      {
+        onRequest: () => {
+          setDisableFields(true);
+        },
+        onSuccess: () => {
+          reset();
+          setDisableFields(false);
+          route.push("/articles");
+        },
+        onError: (ctx) => {
+          setDisableFields(false);
+        },
+      },
+    );
   };
   return (
     <main className={"flex flex-col gap-6"}>
@@ -158,8 +182,11 @@ export default function SignupForm() {
                 Sign up
               </Button>
               <div className="text-center text-sm">
-                Already have an account?{" "}
-                <Link href="/sign-in" className="underline underline-offset-4">
+                Already have an account?
+                <Link
+                  href="/sign-in"
+                  className="pl-2 underline underline-offset-4"
+                >
                   Log in
                 </Link>
               </div>

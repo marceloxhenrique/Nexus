@@ -12,8 +12,20 @@ import {
 import Image from "next/image";
 import { User } from "@/lib/types";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function UserDropdownMenu({ user }: { user: User }) {
+  const router = useRouter();
+  const handleUserLogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+      },
+    });
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,7 +57,7 @@ export function UserDropdownMenu({ user }: { user: User }) {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem className="cursor-pointer" onClick={handleUserLogout}>
           <LogOut />
           <span>Log out</span>
         </DropdownMenuItem>

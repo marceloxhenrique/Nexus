@@ -1,15 +1,17 @@
 "use client";
-import ArticleCard from "@/components/ArticleCard";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { user } from "@/data/User";
+import { authClient } from "@/lib/auth-client";
 
 import Image from "next/image";
 export default function Profile() {
+  const { data: session, isPending, error, refetch } = authClient.useSession();
   const [profilePage, setProfilePage] = useState("articles");
   const handleProfilePage = (page: string) => {
     setProfilePage(page === "articles" ? "articles" : "bio");
   };
+
   return (
     <section className="flex grow flex-col md:flex-row-reverse">
       <div className="items-left flex flex-row gap-4 px-2 py-8 md:flex-1 md:flex-col md:p-8">
@@ -29,6 +31,7 @@ export default function Profile() {
           </p>
           <p className="hidden text-custom-text-light md:block">
             {user.profession}
+            {session?.user.name}
           </p>
         </div>
       </div>
