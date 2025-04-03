@@ -3,10 +3,9 @@ export type User = {
   name: string;
   slug: string;
   email: string;
-  password: string;
   avatar?: string;
   followers: number;
-  profession?: string;
+  occupation?: string;
   role: "user" | "admin" | "editor";
   bio?: string;
   bioMarkdown?: string;

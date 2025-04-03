@@ -2,16 +2,18 @@ import { db } from "@/lib/db";
 import { Article } from "@/lib/types";
 
 export async function getAllArticles() {
-  return await db.article.findMany({
+  const articles = await db.article.findMany({
     include: {
       author: {
         select: {
           name: true,
+          slug: true,
           avatar: true,
         },
       },
     },
   });
+  return articles;
 }
 
 export async function getArticleBySlug(params: string) {
@@ -23,6 +25,7 @@ export async function getArticleBySlug(params: string) {
       author: {
         select: {
           name: true,
+          slug: true,
           avatar: true,
         },
       },
@@ -46,7 +49,6 @@ export async function createArticle(article: CreateArticleInput) {
       ...article,
     },
   });
-
   return newArticle;
 }
 
@@ -59,7 +61,6 @@ export async function updateArticle(article: Article) {
       ...article,
     },
   });
-
   return updatedArticle;
 }
 
@@ -69,7 +70,6 @@ export async function deleteArticle(id: string) {
       id: id,
     },
   });
-
   return deletedArticle;
 }
 type CreateArticleInput = {
