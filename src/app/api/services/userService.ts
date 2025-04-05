@@ -9,18 +9,19 @@ export async function doesUserExist(user: any) {
 }
 
 export async function updateUser(input: any) {
-  const user = await doesUserExist(input);
-  if (!user) throw new Error("User doesn't exist");
-  try {
-    await db.user.update({
-      where: {
-        id: input.id,
-      },
-      data: {
-        ...input,
-      },
-    });
-  } catch (error) {}
+  // const user = await doesUserExist(input);
+  // if (!user) throw new Error("User doesn't exist");
+  // try {
+  return await db.user.update({
+    where: {
+      id: input.id,
+    },
+    data: {
+      ...input,
+    },
+  });
+  // return newUser;
+  // } catch (error) {}
 }
 
 export async function getUserByName(name: string) {

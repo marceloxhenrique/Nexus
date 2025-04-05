@@ -21,6 +21,9 @@ export const auth = betterAuth({
         input: false,
       },
     },
+    deleteUser: {
+      enabled: true,
+    },
   },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
