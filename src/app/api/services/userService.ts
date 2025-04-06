@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
+import { User } from "@/lib/types";
 
-export async function doesUserExist(user: any) {
+export async function doesUserExist(user: User) {
   return await db.user.findUnique({
     where: {
       email: user.email,
@@ -8,20 +9,13 @@ export async function doesUserExist(user: any) {
   });
 }
 
-export async function updateUser(input: any) {
-  // const user = await doesUserExist(input);
-  // if (!user) throw new Error("User doesn't exist");
-  // try {
+export async function updateUser(userId: string, updateData: User) {
   return await db.user.update({
     where: {
-      id: input.id,
+      id: userId,
     },
-    data: {
-      ...input,
-    },
+    data: updateData,
   });
-  // return newUser;
-  // } catch (error) {}
 }
 
 export async function getUserByName(name: string) {

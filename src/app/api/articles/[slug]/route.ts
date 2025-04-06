@@ -39,9 +39,9 @@ export async function PUT(
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
 
-    const newArticle = await req.json();
+    const updateData = await req.json();
 
-    await updateArticle(newArticle);
+    await updateArticle(updateData);
     return NextResponse.json("Article Successfully updated", { status: 200 });
   } catch (error) {
     console.error("Error while updating article: ", error);

@@ -3,7 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-
+import { UserProvider } from "@/contexts/UserContext";
+import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "Nexus – A Blog for Developers & Creators",
   description:
@@ -28,11 +29,14 @@ export default function RootLayout({
     <html lang="en">
       <body className="analaised">
         <ThemeProvider>
-          <section className="flex min-h-screen flex-col bg-custom-background-home">
-            <Navbar></Navbar>
-            {children}
-            <Footer></Footer>
-          </section>
+          <UserProvider>
+            <section className="flex min-h-screen flex-col bg-custom-background-home">
+              <Navbar></Navbar>
+              {children}
+              <Toaster position="top-center" richColors={true} />
+              <Footer></Footer>
+            </section>
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { ArticleWithAuthor } from "@/lib/types";
+import Link from "next/link";
 
 function ArticlePage() {
   const slug = useParams<{ articlename: string }>().articlename;
@@ -32,10 +33,15 @@ function ArticlePage() {
       </h1>
       <section className="mt-4 flex items-center gap-3 text-sm text-custom-text-light">
         <Avatar className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-sm">
-          <AvatarImage src={article.author.avatar} alt={article.author.name} />
-          <AvatarFallback>
-            {article.author.name.slice(0, 2).toUpperCase()}
-          </AvatarFallback>
+          <Link href={`/@${article.authorSlug}`}>
+            <AvatarImage
+              src={article.author.avatar}
+              alt={article.author.name}
+            />
+            <AvatarFallback>
+              {article.author.name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Link>
         </Avatar>
         <span className="font-medium text-custom-text-primary">
           {article.author?.name}
