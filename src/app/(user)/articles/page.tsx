@@ -7,8 +7,8 @@ import { ArticleWithAuthor } from "@/lib/types";
 function Articles() {
   const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
   const getArticles = async () => {
-    const getArticles = await api.get("/articles");
-    setArticles(getArticles.data);
+    const response = await api.get("/articles");
+    setArticles(response.data);
   };
   useEffect(() => {
     getArticles();

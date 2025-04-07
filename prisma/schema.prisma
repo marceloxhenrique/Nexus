@@ -20,7 +20,7 @@ model User {
   slug           String    @unique
   avatar         String?
   followers      Int       @default(0)
-  profession     String?
+  occupation     String?
   role           String    @default("user")
   bio            String?
   bioMarkdown    String?
@@ -31,11 +31,26 @@ model User {
   articles       Article[] @relation("AuthorIdRelation")
   articlesBySlug Article[] @relation("UserSlugRelation")
   emailVerified  Boolean?
-  image          String?
   sessions       Session[]
   accounts       Account[]
+  follower       Follow[]  @relation("UserFollowers")
+  following      Follow[]  @relation("UserFollowing")
 
   @@map("user")
+}
+
+model Follow {
+  id            String   @id
+  followerSlug  String
+  followingSlug String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  follower  User? @relation(name: "UserFollowers", fields: [followerSlug], references: [slug])
+  following User? @relation(name: "UserFollowing", fields: [followingSlug], references: [slug])
+
+  @@unique([followerSlug, followingSlug])
+  @@map("follow")
 }
 
 model Article {
