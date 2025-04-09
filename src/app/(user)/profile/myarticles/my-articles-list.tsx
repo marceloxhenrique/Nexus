@@ -75,7 +75,7 @@ export function MyArticlesList({
           <p className="text-custom-text-light">
             You haven't written any articles yet.
           </p>
-          <Link href="/articles/new">
+          <Link href="/new-article">
             <Button className="mt-4 bg-green-700 hover:bg-green-600">
               Write your first article
             </Button>
@@ -112,8 +112,8 @@ export function MyArticlesList({
                 ))}
               </div>
 
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-custom-text-light">
+              <div className="mt-4 flex items-center justify-between text-custom-text-light">
+                <div className="text-sm">
                   {new Date(article.createdAt).toLocaleDateString()} •{" "}
                   {article.readTime} min read
                 </div>
@@ -132,7 +132,6 @@ export function MyArticlesList({
                       </span>
                     </Button>
                   </Link>
-
                   <Button
                     variant="ghost"
                     size="sm"

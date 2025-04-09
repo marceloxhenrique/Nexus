@@ -43,7 +43,11 @@ export async function getUserBySlug(slug: string) {
       slug: slug,
     },
     include: {
-      articles: true,
+      articles: {
+        where: {
+          published: true,
+        },
+      },
     },
   });
   return user;

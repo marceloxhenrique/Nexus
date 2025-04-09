@@ -26,7 +26,10 @@ import { Plus, Trash2, Upload, Loader2 } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
+import { api } from "@/utils/api";
+import { UserContext } from "@/contexts/UserContext";
+import { toast } from "sonner";
+import { redirect } from "next/dist/server/api-utils";
 const profileSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
   occupation: z
@@ -44,10 +47,6 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-import { api } from "@/utils/api";
-import { UserContext } from "@/contexts/UserContext";
-import { toast } from "sonner";
-import { redirect } from "next/dist/server/api-utils";
 export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
@@ -135,7 +134,7 @@ export default function ProfileForm() {
         <Card className="border-0 shadow-none sm:border-[0.01rem] sm:shadow-md dark:border-none">
           <CardHeader className="py-2">
             <CardTitle className="text-3xl">Profile</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base">
               This information will be displayed publicly so be careful what you
               share.
             </CardDescription>

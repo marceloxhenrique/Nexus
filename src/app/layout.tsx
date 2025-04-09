@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 import { UserProvider } from "@/contexts/UserContext";
 import { Toaster } from "sonner";
+import Navbar from "@/components/Navbar";
+
 export const metadata: Metadata = {
   title: "Nexus – A Blog for Developers & Creators",
   description:
