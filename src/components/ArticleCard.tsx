@@ -7,7 +7,10 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
   return (
-    <Link href={`/articles/${article.slug}`} className="block">
+    <Link
+      href={`/${"@" + article.authorSlug}/${article.slug}`}
+      className="block"
+    >
       <section className="flex max-w-3xl flex-col gap-6 py-6 md:flex-row">
         <div className="order-2 flex-1 md:order-1">
           <div className="mb-3 flex items-center gap-3">

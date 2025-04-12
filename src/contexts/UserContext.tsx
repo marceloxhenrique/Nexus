@@ -1,11 +1,11 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
-import { User } from "@/lib/types";
+import { Article, User } from "@/lib/types";
 import { api } from "@/utils/api";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 type UserType = {
-  user: User | undefined;
+  user: UserContextType | undefined;
   setUser: (e: User) => void;
 };
 
@@ -31,4 +31,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </UserContext.Provider>
   );
+};
+export type UserContextType = {
+  id: string;
+  name: string;
+  slug: string;
+  email: string;
+  avatar?: string;
+  followers: number;
+  occupation?: string;
+  role: "user" | "admin" | "editor";
+  bio?: string;
+  bioMarkdown?: string;
+  socials?: string[];
+  verified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  articles?: Article[];
 };

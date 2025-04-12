@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import ArticleCard from "@/components/ArticleCard";
 import { api } from "@/utils/api";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { ArticleWithAuthor, User, Article } from "@/lib/types";
 
 export default function PublicProfilePage() {

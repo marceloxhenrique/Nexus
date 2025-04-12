@@ -48,7 +48,7 @@ import { toast } from "sonner";
 import { UserContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { auth } from "@/lib/auth";
+
 export default function AccountForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -107,11 +107,11 @@ export default function AccountForm() {
   };
 
   return (
-    <section className="space-y-6">
-      <Card className="border-0 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-md dark:border-none md:dark:bg-zinc-900">
+    <section className="space-y-6 text-base">
+      <Card className="border-0 bg-custom-background text-base shadow-none sm:border-[0.01rem] sm:shadow-md dark:border-none md:dark:bg-zinc-900">
         <CardHeader>
-          <CardTitle>Account Security</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl">Account Security</CardTitle>
+          <CardDescription className="text-base">
             Update your password and manage your account security.
           </CardDescription>
         </CardHeader>
@@ -135,8 +135,8 @@ export default function AccountForm() {
 
       <Card className="border-0 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-lg dark:border-none md:dark:bg-zinc-900">
         <CardHeader>
-          <CardTitle>Change Password</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl">Change Password</CardTitle>
+          <CardDescription className="text-base">
             Update your password to keep your account secure.
           </CardDescription>
         </CardHeader>
@@ -234,8 +234,8 @@ export default function AccountForm() {
 
       <Card className="border-0 border-red-200 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-lg dark:border-none md:dark:bg-zinc-900">
         <CardHeader className="text-red-500">
-          <CardTitle>Danger Zone </CardTitle>
-          <CardDescription className="text-red-400">
+          <CardTitle className="text-2xl">Danger Zone </CardTitle>
+          <CardDescription className="text-base text-red-400">
             Permanently delete your account and all of your content.
           </CardDescription>
         </CardHeader>

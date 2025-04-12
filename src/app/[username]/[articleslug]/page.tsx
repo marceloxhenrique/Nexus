@@ -10,12 +10,15 @@ import { ArticleWithAuthor } from "@/lib/types";
 import Link from "next/link";
 
 function ArticlePage() {
-  const slug = useParams<{ articlename: string }>().articlename;
+  const { articleslug } = useParams<{ articleslug: string }>();
   const [article, setArticle] = useState<ArticleWithAuthor>();
-
   const getArticle = async () => {
-    const response = await api.get(`/articles/${slug}`);
-    setArticle(response.data);
+    try {
+      const response = await api.get(`/articles?article=${articleslug}`);
+      setArticle(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
   useEffect(() => {
     getArticle();
@@ -27,7 +30,7 @@ function ArticlePage() {
     );
   }
   return (
-    <div className="mx-auto max-w-3xl py-10">
+    <main className="mx-auto max-w-3xl py-10">
       <h1 className="text-4xl font-bold text-custom-text-primary">
         {article.title}
       </h1>
@@ -75,14 +78,14 @@ function ArticlePage() {
       <article className="mt-6 space-y-4 text-lg text-custom-text-light">
         {article.content}
       </article>
-      <div className="mt-6 flex flex-wrap gap-2">
+      <section className="mt-6 flex flex-wrap gap-2">
         {article.tags.map((tag) => (
           <Badge key={tag} variant="secondary" className="text-xs">
             {tag}
           </Badge>
         ))}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 export default ArticlePage;

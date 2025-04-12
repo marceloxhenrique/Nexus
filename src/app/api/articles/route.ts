@@ -1,10 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createArticle, getAllArticles } from "../services/articlesService";
+import {
+  createArticle,
+  getAllArticles,
+  getArticleBySlug,
+} from "../services/articlesService";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const articleSlug = searchParams.get("article");
+  if (!articleSlug) {
+    try {
+      const articles = await getAllArticles();
+      if (!articles || articles.length === 0) {
+        return NextResponse.json(
+          { articles: [], message: "No articles available" },
+          { status: 200 },
+        );
+      }
+      return NextResponse.json(articles, { status: 200 });
+    } catch (error) {
+      console.error("Error while fetching articles availables: ", error);
+      return NextResponse.json(
+        { error: "Unable to fetch articles availables" },
+        { status: 500 },
+      );
+    }
+  }
   try {
-    const articles = await getAllArticles();
-    if (!articles || articles.length === 0) {
+    const articles = await getArticleBySlug(articleSlug);
+    if (!articles) {
       return NextResponse.json(
         { articles: [], message: "No articles available" },
         { status: 200 },

@@ -3,6 +3,9 @@ import { Article } from "@/lib/types";
 
 export async function getAllArticles() {
   const articles = await db.article.findMany({
+    where: {
+      published: true,
+    },
     include: {
       author: {
         select: {
@@ -20,6 +23,7 @@ export async function getArticleBySlug(params: string) {
   const articles = await db.article.findUnique({
     where: {
       slug: params,
+      published: true,
     },
     include: {
       author: {
@@ -45,9 +49,7 @@ export async function getArticleById(id: string) {
 
 export async function createArticle(article: CreateArticleInput) {
   const newArticle = await db.article.create({
-    data: {
-      ...article,
-    },
+    data: article,
   });
   return newArticle;
 }
@@ -57,9 +59,7 @@ export async function updateArticle(article: Article) {
     where: {
       id: article.id,
     },
-    data: {
-      ...article,
-    },
+    data: article,
   });
   return updatedArticle;
 }

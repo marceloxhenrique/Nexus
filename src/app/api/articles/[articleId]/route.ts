@@ -52,12 +52,17 @@ export async function PUT(
   }
 }
 
-export async function DELETE(article: { params: Promise<{ slug: string }> }) {
-  const slug = (await article.params).slug;
-  if (!slug) return NextResponse.json("Invalid slug", { status: 400 });
+export async function DELETE(
+  req: NextRequest,
+  paramsArticleId: { params: Promise<{ articleId: string }> },
+) {
+  const articleId = (await paramsArticleId.params).articleId;
+  console.log("slug");
+  if (!articleId)
+    return NextResponse.json("Invalid Article ID", { status: 400 });
 
   try {
-    const article = await getArticleById(slug);
+    const article = await getArticleById(articleId);
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
 
