@@ -29,16 +29,23 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
               </span>
               <span className="text-custom-text-light">•</span>
               <span className="text-custom-text-light">
-                {new Date(article.createdAt).toLocaleDateString()}
+                {new Date(article.createdAt).toLocaleDateString("en-IN", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </span>
             </div>
           </div>
           <h3 className="text-xl font-bold text-custom-text-primary">
             {article.title}
           </h3>
-          <p className="mt-2 line-clamp-2 text-custom-text-light">
-            {article.content.slice(0, 140)}...
-          </p>
+          <p
+            className="mt-2 line-clamp-2 text-custom-text-light"
+            dangerouslySetInnerHTML={{
+              __html: article.content.slice(0, 137) + "...",
+            }}
+          ></p>
           <div className="mt-3 flex flex-wrap gap-2">
             {article.tags.map((tag) => (
               <Badge key={tag} variant="secondary">

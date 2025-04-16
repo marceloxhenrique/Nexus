@@ -1,11 +1,12 @@
 "use client";
 
-import type { Article } from "@/lib/types";
+import type { Article } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -46,7 +47,6 @@ export function MyArticlesList({
     }
   };
 
-  // Helper function to get badge variant based on article status
   const getStatusBadge = (article: Article) => {
     if (article.published) {
       return (
@@ -88,21 +88,24 @@ export function MyArticlesList({
             className="flex flex-col gap-6 border-b border-gray-100 py-6 last:border-0 md:flex-row"
           >
             <div className="order-2 flex-1 md:order-1">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Link
-                  href={`/articles/${article.slug}`}
-                  className="group block"
-                >
-                  <h3 className="font-semibold text-custom-text-primary transition-colors group-hover:text-green-700">
+              <Link
+                href={`/${article.authorSlug}/${article.slug}`}
+                className="group block"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 text-lg">
+                  <h3 className="font-semibold text-custom-text-primary">
                     {article.title}
                   </h3>
-                </Link>
-                {getStatusBadge(article)}
-              </div>
+                  {getStatusBadge(article)}
+                </div>
 
-              <p className="mt-2 line-clamp-2 text-sm text-custom-text-light">
-                {article.content}
-              </p>
+                <p
+                  className="mt-2 line-clamp-2 text-sm text-custom-text-light"
+                  dangerouslySetInnerHTML={{
+                    __html: article.content.slice(0, 137) + "...",
+                  }}
+                ></p>
+              </Link>
 
               <div className="mt-2 flex flex-wrap gap-2">
                 {article.tags.map((tag) => (
@@ -114,8 +117,12 @@ export function MyArticlesList({
 
               <div className="mt-4 flex items-center justify-between text-custom-text-light">
                 <div className="text-sm">
-                  {new Date(article.createdAt).toLocaleDateString()} •{" "}
-                  {article.readTime} min read
+                  {new Date(article.createdAt).toLocaleDateString("en-IN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}{" "}
+                  • {article.readTime} min read
                 </div>
 
                 <div className="flex space-x-1">
@@ -149,13 +156,16 @@ export function MyArticlesList({
             </div>
 
             <div className="order-1 md:order-2 md:w-1/3">
-              <Link href={`/articles/${article.slug}`} className="block">
-                <img
-                  src={article.image || "/placeholder.svg?height=200&width=200"}
-                  alt={article.title}
-                  className="h-40 w-full rounded-md object-cover"
-                />
-              </Link>
+              {/* <Link href={`/articles/${article.slug}`} className="block"> */}
+
+              <Image
+                src={article.image || "/placeholder.svg?height=200&width=200"}
+                alt={article.title}
+                className="h-40 w-full rounded-md object-cover"
+                width={400}
+                height={300}
+              />
+              {/* </Link> */}
             </div>
           </div>
         ))

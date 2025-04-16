@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getUserById, updateUser } from "../../services/userService";
+import {
+  getUserByIdWithArticles,
+  updateUser,
+} from "../../services/userService";
 
 export async function GET(
   req: NextRequest,
@@ -17,7 +20,7 @@ export async function GET(
         "Forbidden: You do not have the riquired privileges.",
         { status: 403 },
       );
-    const user = await getUserById(session.session.userId);
+    const user = await getUserByIdWithArticles(session.session.userId);
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
     console.error("Error while retriving user: ", error);
@@ -43,11 +46,10 @@ export async function PUT(
         { status: 403 },
       );
 
-    const user = await getUserById(session.session.userId);
+    const user = await getUserByIdWithArticles(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     const updateData = await req.json();
-    console.log("Update data:", updateData);
     await updateUser(session.session.userId, updateData);
 
     return NextResponse.json("User successfully updated", { status: 200 });

@@ -4,8 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import ArticleCard from "@/components/ArticleCard";
 import { api } from "@/utils/api";
-import { use, useEffect, useState } from "react";
-import { ArticleWithAuthor, User, Article } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { ArticleWithAuthor } from "@/lib/types";
+import { User, Article } from "@prisma/client";
 
 export default function PublicProfilePage() {
   const [profileUser, setProfileUser] = useState<User | undefined>();
@@ -47,8 +48,8 @@ export default function PublicProfilePage() {
       <div className="mx-auto flex w-full max-w-[80rem] grow flex-col px-4 py-10">
         <div className="mb-12 flex flex-col items-start gap-8 md:flex-row">
           <Avatar className="h-32 w-32">
-            <AvatarImage src={profileUser?.avatar} alt={profileUser?.name} />
-            <AvatarFallback>
+            <AvatarImage src={profileUser?.avatar!} alt={profileUser?.name} />
+            <AvatarFallback className="text-4xl">
               {profileUser?.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>

@@ -14,7 +14,7 @@ export default function MyArticlesPage() {
         <h1 className="text-3xl font-bold tracking-tight text-custom-text-primary">
           My Articles
         </h1>
-        <Link href="/new-article">
+        <Link href="/profile/new-article">
           <Button className="bg-green-700 hover:bg-green-600">
             <PlusCircle className="mr-2 h-4 w-4" />
             New Article
