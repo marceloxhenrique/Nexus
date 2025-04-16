@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { User } from "@/lib/types";
+import { User } from "@prisma/client";
 
 export async function doesUserExist(user: User) {
   return await db.user.findUnique({
@@ -53,13 +53,22 @@ export async function getUserBySlug(slug: string) {
   return user;
 }
 
-export async function getUserById(userId: string) {
+export async function getUserByIdWithArticles(userId: string) {
   const user = await db.user.findUnique({
     where: {
       id: userId,
     },
     include: {
       articles: true,
+    },
+  });
+  return user;
+}
+
+export async function getUserById(userId: string) {
+  const user: User | null = await db.user.findUnique({
+    where: {
+      id: userId,
     },
   });
   return user;

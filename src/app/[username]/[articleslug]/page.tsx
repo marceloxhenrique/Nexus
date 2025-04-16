@@ -9,6 +9,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { ArticleWithAuthor } from "@/lib/types";
 import Link from "next/link";
 
+// TODO: Sanitize HTML content
+// import DOMPurify from "dompurify";
+// const safeHtml = DOMPurify.sanitize(userSubmittedHtml);
+
 function ArticlePage() {
   const { articleslug } = useParams<{ articleslug: string }>();
   const [article, setArticle] = useState<ArticleWithAuthor>();
@@ -38,7 +42,7 @@ function ArticlePage() {
         <Avatar className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-sm">
           <Link href={`/@${article.authorSlug}`}>
             <AvatarImage
-              src={article.author.avatar}
+              src={article.author.avatar!}
               alt={article.author.name}
             />
             <AvatarFallback>
@@ -75,8 +79,11 @@ function ArticlePage() {
           className="mt-6 rounded-lg"
         />
       )}
-      <article className="mt-6 space-y-4 text-lg text-custom-text-light">
-        {article.content}
+      <article className="wrap mt-6 space-y-4 text-lg text-custom-text-light">
+        <div
+          className="rich-content"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
       </article>
       <section className="mt-6 flex flex-wrap gap-2">
         {article.tags.map((tag) => (

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { Article } from "@/lib/types";
+import { User, Article } from "@prisma/client";
 
 export async function getAllArticles() {
   const articles = await db.article.findMany({
@@ -39,7 +39,7 @@ export async function getArticleBySlug(params: string) {
 }
 
 export async function getArticleById(id: string) {
-  const article = await db.article.findUnique({
+  const article: Article | null = await db.article.findUnique({
     where: {
       id: id,
     },
@@ -47,11 +47,24 @@ export async function getArticleById(id: string) {
   return article;
 }
 
-export async function createArticle(article: CreateArticleInput) {
-  const newArticle = await db.article.create({
-    data: article,
+export async function createArticle(article: CreateArticleInput, user: User) {
+  const newArticle = {
+    title: article.title,
+    slug: article.title.replace(/\s+/g, "-").toLowerCase(),
+    content: article.content,
+    image: article.image,
+    tags: article.tags,
+    readTime: article.readTime,
+    published: article.published,
+    authorId: user.id,
+    authorSlug: user.slug,
+  };
+
+  console.log("Creating article:", newArticle);
+  const output = await db.article.create({
+    data: newArticle,
   });
-  return newArticle;
+  return output;
 }
 
 export async function updateArticle(article: Article) {

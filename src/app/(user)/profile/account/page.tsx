@@ -1,7 +1,6 @@
 "use client";
 
 import { useContext, useState } from "react";
-import type { User } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +26,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+import { api } from "@/utils/api";
+import { toast } from "sonner";
+import { UserContext } from "@/contexts/UserContext";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { UserWithArticles } from "@/lib/types";
+
 const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, { message: "This field is obligatory" }),
@@ -43,19 +49,13 @@ const passwordSchema = z
 
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
-import { api } from "@/utils/api";
-import { toast } from "sonner";
-import { UserContext } from "@/contexts/UserContext";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-
 export default function AccountForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  let user = useContext(UserContext)?.user;
+  let user: UserWithArticles | undefined = useContext(UserContext)?.user;
   const router = useRouter();
   const {
     register,

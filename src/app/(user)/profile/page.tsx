@@ -29,7 +29,7 @@ import * as z from "zod";
 import { api } from "@/utils/api";
 import { UserContext } from "@/contexts/UserContext";
 import { toast } from "sonner";
-import { redirect } from "next/dist/server/api-utils";
+
 const profileSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
   occupation: z
@@ -142,7 +142,7 @@ export default function ProfileForm() {
           <CardContent className="flex flex-col gap-8">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
+                <AvatarImage src={user?.avatar!} alt={user?.name} />
                 <AvatarFallback>
                   {user?.name?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>

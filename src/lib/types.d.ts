@@ -1,43 +1,20 @@
-export type User = {
-  id: string;
-  name: string;
-  slug: string;
-  email: string;
-  avatar?: string;
-  followers: number;
-  occupation?: string;
-  role: "user" | "admin" | "editor";
-  bio?: string;
-  bioMarkdown?: string;
-  socials?: string[];
-  verified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { Prisma } from "@prisma/client";
 
-export type Article = {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  image?: string;
-  likes: number;
-  views: number;
-  tags: string[];
-  readTime: number;
-  published: boolean;
-  commentsCount: number;
-  authorId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  authorSlug: string;
-};
+const articleWithAuthor = Prisma.validator<Prisma.ArticleDefaultArgs>()({
+  include: {
+    author: {
+      select: {
+        name: true,
+        avatar: true,
+      },
+    },
+  },
+});
+export type ArticleWithAuthor = Prisma.ArticleGetPayload<
+  typeof articleWithAuthor
+>;
 
-export type ArticleWithAuthor = Article & {
-  author: Pick<Author, "name" | "avatar">;
-};
-
-type Author = {
-  name: string;
-  avatar: string;
-};
+const userWithArticles = Prisma.validator<Prisma.UserDefaultArgs>()({
+  include: { articles: true },
+});
+export type UserWithArticles = Prisma.UserGetPayload<typeof userWithArticles>;

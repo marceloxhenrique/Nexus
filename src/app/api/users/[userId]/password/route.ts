@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserById } from "@/app/api/services/userService";
+import { getUserByIdWithArticles } from "@/app/api/services/userService";
 import { auth } from "@/lib/auth";
 
 export async function PUT(
@@ -17,7 +17,7 @@ export async function PUT(
         { status: 403 },
       );
 
-    const user = await getUserById(session.session.userId);
+    const user = await getUserByIdWithArticles(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     const updateData = await req.json();
