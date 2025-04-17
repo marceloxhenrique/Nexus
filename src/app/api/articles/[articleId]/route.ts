@@ -5,8 +5,8 @@ import {
   getArticleBySlug,
   updateArticle,
 } from "../../services/articlesService";
-import { auth } from "@/lib/auth";
 import { Article } from "@prisma/client";
+import { getSession } from "@/utils/session";
 
 export async function GET(
   req: NextRequest,
@@ -36,15 +36,9 @@ export async function PUT(
   const articleId = (await paramsArticleId.params).articleId;
   if (!articleId)
     return NextResponse.json("Invalid article ID", { status: 400 });
-
+  const { session, errorResponse } = await getSession(req.headers);
+  if (errorResponse) return errorResponse;
   try {
-    const headers = req.headers;
-    const session = await auth.api.getSession({ headers });
-    if (!session)
-      return NextResponse.json(
-        { error: "Forbidden: You do not have the riquired privileges." },
-        { status: 403 },
-      );
     // !!! Check if this article belongs to the owner of this session
     const article = await getArticleById(articleId);
     if (!article)
@@ -71,14 +65,11 @@ export async function DELETE(
   if (!articleId)
     return NextResponse.json("Invalid Article ID", { status: 400 });
 
+  const { session, errorResponse } = await getSession(req.headers);
+  if (errorResponse) return errorResponse;
   try {
     const headers = req.headers;
-    const session = await auth.api.getSession({ headers });
-    if (!session)
-      return NextResponse.json(
-        { error: "Forbidden: You do not have the riquired privileges." },
-        { status: 403 },
-      );
+
     const article: Article | null = await getArticleById(articleId);
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });

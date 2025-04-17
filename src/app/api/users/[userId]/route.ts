@@ -4,6 +4,7 @@ import {
   getUserByIdWithArticles,
   updateUser,
 } from "../../services/userService";
+import { getSession } from "@/utils/session";
 
 export async function GET(
   req: NextRequest,
@@ -12,14 +13,10 @@ export async function GET(
   const { userId } = await paramsUserId.params;
   if (!userId)
     return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+
+  const { session, errorResponse } = await getSession(req.headers);
+  if (errorResponse) return errorResponse;
   try {
-    const headers = req.headers;
-    const session = await auth.api.getSession({ headers });
-    if (!session)
-      return NextResponse.json(
-        "Forbidden: You do not have the riquired privileges.",
-        { status: 403 },
-      );
     const user = await getUserByIdWithArticles(session.session.userId);
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
@@ -37,15 +34,9 @@ export async function PUT(
 ) {
   const userId = await paramsUserId.params;
   if (!userId) return NextResponse.json("User ID is required", { status: 400 });
+  const { session, errorResponse } = await getSession(req.headers);
+  if (errorResponse) return errorResponse;
   try {
-    const headers = req.headers;
-    const session = await auth.api.getSession({ headers });
-    if (!session)
-      return NextResponse.json(
-        { error: "Forbidden: You do not have the riquired privileges." },
-        { status: 403 },
-      );
-
     const user = await getUserByIdWithArticles(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -71,14 +62,10 @@ export async function DELETE(
   const userId = await paramsUserId.params;
   if (!userId)
     return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+  const { session, errorResponse } = await getSession(req.headers);
+  if (errorResponse) return errorResponse;
   try {
     const headers = req.headers;
-    const session = await auth.api.getSession({ headers });
-    if (!session)
-      return NextResponse.json(
-        { error: "Forbidden: Insufficient privileges." },
-        { status: 403 },
-      );
     await auth.api.deleteUser({ headers, body: {} });
     return NextResponse.json(
       { message: "User successfully deleted" },

@@ -7,6 +7,7 @@ import {
 import { auth } from "@/lib/auth";
 import { getUserById } from "../services/userService";
 import { User } from "@prisma/client";
+import { getSession } from "@/utils/session";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -33,13 +34,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const article = await req.json();
-  const headers = req.headers;
-  const session = await auth.api.getSession({ headers });
-  if (!session)
-    return NextResponse.json(
-      { error: "Forbidden: You do not have the riquired privileges." },
-      { status: 403 },
-    );
+  const { session, errorResponse } = await getSession(req.headers);
+  if (errorResponse) return errorResponse;
   try {
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
