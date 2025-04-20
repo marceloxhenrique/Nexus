@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserByIdWithArticles } from "@/app/api/services/userService";
 import { auth } from "@/lib/auth";
+import { getSession } from "@/utils/session";
 
 export async function PUT(
   req: NextRequest,
@@ -10,12 +11,8 @@ export async function PUT(
   if (!userId) return NextResponse.json("User ID is required", { status: 400 });
   try {
     const headers = req.headers;
-    const session = await auth.api.getSession({ headers });
-    if (!session)
-      return NextResponse.json(
-        { error: "Forbidden: You do not have the riquired privileges." },
-        { status: 403 },
-      );
+    const { session, errorResponse } = await getSession(req.headers);
+    if (errorResponse) return errorResponse;
 
     const user = await getUserByIdWithArticles(session.session.userId);
     if (!user)
