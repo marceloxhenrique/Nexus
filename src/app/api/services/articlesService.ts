@@ -52,15 +52,13 @@ export async function createArticle(article: CreateArticleInput, user: User) {
     title: article.title,
     slug: article.title.replace(/\s+/g, "-").toLowerCase(),
     content: article.content,
-    image: article.image,
+    image: article.imageFile,
     tags: article.tags,
     readTime: article.readTime,
     published: article.published,
     authorId: user.id,
     authorSlug: user.slug,
   };
-
-  console.log("Creating article:", newArticle);
   const output = await db.article.create({
     data: newArticle,
   });
@@ -89,7 +87,7 @@ type CreateArticleInput = {
   title: string;
   slug: string;
   content: string;
-  image?: string;
+  imageFile?: string;
   tags: string[];
   readTime: number;
   published: boolean;
