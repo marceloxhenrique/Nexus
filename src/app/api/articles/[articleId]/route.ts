@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   deleteArticle,
   getArticleById,
-  getArticleBySlug,
   updateArticle,
 } from "../../services/articlesService";
 import { Article } from "@prisma/client";
@@ -10,13 +9,13 @@ import { getSession } from "@/utils/session";
 
 export async function GET(
   req: NextRequest,
-  article: { params: Promise<{ slug: string }> },
+  article: { params: Promise<{ articleId: string }> },
 ) {
-  const slug = (await article.params).slug;
-  if (!slug) return NextResponse.json("Invalid slug", { status: 400 });
+  const articleId = (await article.params).articleId;
+  if (!articleId) return NextResponse.json("Invalid slug", { status: 400 });
 
   try {
-    const article = await getArticleBySlug(slug);
+    const article = await getArticleById(articleId);
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
     return NextResponse.json(article, { status: 200 });
@@ -45,7 +44,6 @@ export async function PUT(
       return NextResponse.json("Article not found", { status: 404 });
 
     const articleInput = await req.json();
-
     await updateArticle(articleInput);
     return NextResponse.json("Article Successfully updated", { status: 200 });
   } catch (error) {
