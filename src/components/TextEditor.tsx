@@ -104,6 +104,7 @@ export function TextEditor({
         </DropdownMenu>
         <Button
           variant="ghost"
+          type="button"
           size="icon"
           onClick={() => execCommand("bold")}
           className="h-8 w-8"
@@ -112,6 +113,7 @@ export function TextEditor({
         </Button>
         <Button
           variant="ghost"
+          type="button"
           size="icon"
           onClick={() => execCommand("italic")}
           className="h-8 w-8"
@@ -120,6 +122,7 @@ export function TextEditor({
         </Button>
         <Button
           variant="ghost"
+          type="button"
           size="icon"
           onClick={() => execCommand("underline")}
           className="h-8 w-8"
@@ -129,6 +132,7 @@ export function TextEditor({
         <div className="mx-1 h-8 w-px bg-gray-200"></div>
         <Button
           variant="ghost"
+          type="button"
           size="icon"
           onClick={() => execCommand("justifyLeft")}
           className="h-8 w-8"
@@ -137,6 +141,7 @@ export function TextEditor({
         </Button>
         <Button
           variant="ghost"
+          type="button"
           size="icon"
           onClick={() => execCommand("justifyCenter")}
           className="h-8 w-8"
@@ -145,6 +150,7 @@ export function TextEditor({
         </Button>
         <Button
           variant="ghost"
+          type="button"
           size="icon"
           onClick={() => execCommand("justifyRight")}
           className="h-8 w-8"
@@ -154,7 +160,12 @@ export function TextEditor({
         <div className="mx-1 h-8 w-px bg-gray-200"></div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              type="button"
+            >
               <Palette className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

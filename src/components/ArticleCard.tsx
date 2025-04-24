@@ -5,18 +5,19 @@ import Link from "next/link";
 import { ArticleWithAuthor } from "@/lib/types";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
+import Image from "next/image";
 const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
   return (
     <Link
       href={`/${"@" + article.authorSlug}/${article.slug}`}
-      className="block"
+      className="block max-w-3xl"
     >
       <section className="flex max-w-3xl flex-col gap-6 py-6 md:flex-row">
         <div className="order-2 flex-1 md:order-1">
           <div className="mb-3 flex items-center gap-3">
             <Avatar className="flex h-8 w-8 items-center justify-center bg-zinc-200 text-sm">
               <AvatarImage
-                src={article.author.avatar}
+                src={article.author.avatar!}
                 alt={article.author.name}
               />
               <AvatarFallback>
@@ -68,12 +69,16 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
             </span>
           </section>
         </div>
-        <div className="order-1 flex-shrink-0 overflow-hidden md:order-2 md:w-1/4">
-          <img
-            src={article.image}
-            alt={article.title}
-            className="h-48 w-full rounded-lg object-cover transition-transform duration-300 group-hover:scale-105 md:h-32"
-          />
+        <div className="order-1 md:order-2 md:w-1/3">
+          {article.image && (
+            <Image
+              src={article.image}
+              alt={article.title}
+              className="h-40 w-full rounded-md object-cover"
+              width={400}
+              height={300}
+            />
+          )}
         </div>
       </section>
       <div className="max-w-3xl border-b-[0.01rem] border-zinc-300 dark:border-zinc-600"></div>

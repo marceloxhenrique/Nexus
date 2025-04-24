@@ -3,7 +3,7 @@
 import type { Article } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, Trash2 } from "lucide-react";
+import { AlertCircle, Edit, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
@@ -89,7 +89,11 @@ export function MyArticlesList({
           >
             <div className="order-2 flex-1 md:order-1">
               <Link
-                href={`/${article.authorSlug}/${article.slug}`}
+                href={
+                  article.published
+                    ? `/${article.authorSlug}/${article.slug}`
+                    : `myarticles/edit/${article.id}`
+                }
                 className="group block"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 text-lg">
@@ -126,7 +130,7 @@ export function MyArticlesList({
                 </div>
 
                 <div className="flex space-x-1">
-                  <Link href={`/articles/edit/${article.id}`}>
+                  <Link href={`myarticles/edit/${article.id}`}>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -156,16 +160,15 @@ export function MyArticlesList({
             </div>
 
             <div className="order-1 md:order-2 md:w-1/3">
-              {/* <Link href={`/articles/${article.slug}`} className="block"> */}
-
-              <Image
-                src={article.image || "/placeholder.svg?height=200&width=200"}
-                alt={article.title}
-                className="h-40 w-full rounded-md object-cover"
-                width={400}
-                height={300}
-              />
-              {/* </Link> */}
+              {article.image && (
+                <Image
+                  src={article.image}
+                  alt={article.title}
+                  className="h-40 w-full rounded-md object-cover"
+                  width={400}
+                  height={300}
+                />
+              )}
             </div>
           </div>
         ))
@@ -174,17 +177,28 @@ export function MyArticlesList({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete Article</DialogTitle>
+            <DialogTitle className="text-red-500">Delete Article</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{articleToDelete?.title}"? This
-              action cannot be undone.
+              Are you sure you want to delete "{articleToDelete?.title}" ? This
+              action cannot be undone and will permanently delete this article.
             </DialogDescription>
           </DialogHeader>
+          <div className="mt-4 flex space-y-4 rounded-md bg-red-50 p-4">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-700">Warning</h3>
+              <p className="mt-2 text-sm text-red-700">This will:</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
+                <li>Delete your article permanently</li>
+                <li>Delete all likes, comments and interactions</li>
+              </ul>
+            </div>
+          </div>
           <DialogFooter className="mt-4">
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
-              className="border-[0.01rem]"
+              className="border-[0.01rem] text-custom-text-primary"
               disabled={isLoading}
             >
               Cancel
@@ -198,7 +212,7 @@ export function MyArticlesList({
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
-                "Delete Article"
+                "Yes, delete article"
               )}
             </Button>
           </DialogFooter>

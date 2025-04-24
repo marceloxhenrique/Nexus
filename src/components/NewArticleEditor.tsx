@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Save, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -78,7 +78,6 @@ export function NewArticleEditor() {
       const formData = new FormData();
       if (imageFile) {
         formData.append("image", imageFile);
-        console.log("Image File", imageFile);
       }
       formData.append("title", data.title);
       formData.append("content", data.content);
@@ -242,8 +241,9 @@ export function NewArticleEditor() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
-                "Save Draft"
+                <Save />
               )}
+              Save Draft
             </Button>
 
             <Button
@@ -255,8 +255,9 @@ export function NewArticleEditor() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
-                "Publish"
+                <Send />
               )}
+              Publish
             </Button>
           </div>
         </CardFooter>
@@ -265,7 +266,9 @@ export function NewArticleEditor() {
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Publish Article</DialogTitle>
+            <DialogTitle className="text-custom-text-primary">
+              Publish Article
+            </DialogTitle>
             <DialogDescription>
               Review your article before publishing. Once published, it will be
               visible to all readers.
@@ -277,7 +280,9 @@ export function NewArticleEditor() {
               <h3 className="text-sm font-medium text-custom-text-light">
                 Title
               </h3>
-              <p className="font-semibold">{watchTitle}</p>
+              <p className="font-semibold text-custom-text-primary">
+                {watchTitle}
+              </p>
             </div>
 
             {imagePreview && (

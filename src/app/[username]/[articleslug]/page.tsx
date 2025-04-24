@@ -54,7 +54,11 @@ function ArticlePage() {
           {article.author?.name}
         </span>
         <span className="flex items-center gap-1">
-          {new Date(article.createdAt).toLocaleDateString()}
+          {new Date(article.createdAt).toLocaleDateString("en-IN", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </span>
       </section>
       <section className="mt-3 flex flex-wrap gap-3 text-sm text-custom-text-light sm:gap-4">
