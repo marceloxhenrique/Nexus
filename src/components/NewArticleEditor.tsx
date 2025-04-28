@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Save, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { TextEditor } from "./TextEditor";
 import { ImageUploader } from "./ImageUploader";
 import { api } from "@/utils/api";
+import axios from "axios";
 
 const articleSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
@@ -75,34 +76,25 @@ export function NewArticleEditor() {
     setIsLoading(true);
     try {
       const data = getValues();
-      const formData = new FormData();
-      if (imageFile) {
-        formData.append("image", imageFile);
-        console.log("Image File", imageFile);
-      }
-      formData.append("title", data.title);
-      formData.append("content", data.content);
-      if (data.tags) {
-        data.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .forEach((tag) => {
-            formData.append("tags", tag);
-          });
-      }
-      formData.append("published", "true");
-
       const response = await api.post("/articles", {
         ...data,
         tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
-        imageFile: imageFile ? imageFile.name : null,
+        image: imageFile?.name,
+        fileType: imageFile?.type,
         published: isPublished,
       });
+      const uploadUrl = await response.data;
+      const uploadImage = await axios.put(uploadUrl, imageFile, {
+        headers: {
+          "Content-Type": imageFile?.type,
+        },
+      });
+
       reset();
       if (isPublished)
         toast.success("Your article has been published successfully.");
       if (!isPublished) {
-        toast.info("Your article has been saved successfully.");
+        toast.success("Your article has been saved successfully.");
       }
       router.push("/profile/myarticles");
     } catch (error) {
@@ -165,7 +157,7 @@ export function NewArticleEditor() {
           <section className="space-y-2">
             <Label>Cover Image</Label>
             <ImageUploader
-              onImageChange={(file: any) => {
+              onImageChange={(file: File | null) => {
                 setImageFile(file);
                 if (file) {
                   // Create a preview URL for the UI
@@ -242,8 +234,9 @@ export function NewArticleEditor() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
-                "Save Draft"
+                <Save />
               )}
+              Save Draft
             </Button>
 
             <Button
@@ -255,8 +248,9 @@ export function NewArticleEditor() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
-                "Publish"
+                <Send />
               )}
+              Publish
             </Button>
           </div>
         </CardFooter>
@@ -265,7 +259,9 @@ export function NewArticleEditor() {
       <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Publish Article</DialogTitle>
+            <DialogTitle className="text-custom-text-primary">
+              Publish Article
+            </DialogTitle>
             <DialogDescription>
               Review your article before publishing. Once published, it will be
               visible to all readers.
@@ -277,7 +273,9 @@ export function NewArticleEditor() {
               <h3 className="text-sm font-medium text-custom-text-light">
                 Title
               </h3>
-              <p className="font-semibold">{watchTitle}</p>
+              <p className="font-semibold text-custom-text-primary">
+                {watchTitle}
+              </p>
             </div>
 
             {imagePreview && (

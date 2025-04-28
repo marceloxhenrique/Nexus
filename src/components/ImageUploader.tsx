@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
@@ -18,6 +18,7 @@ export function ImageUploader({
   imagePreview,
   isLoading = false,
 }: ImageUploadProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -58,6 +59,13 @@ export function ImageUploader({
     onImageChange(file);
   };
 
+  const handleRemoveImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    onImageChange(null);
+  };
+
   return (
     <div
       className={`flex h-64 w-full flex-col items-center justify-center rounded-md border-2 border-dashed p-4 transition-colors ${
@@ -79,7 +87,7 @@ export function ImageUploader({
             variant="secondary"
             size="sm"
             className="absolute right-2 bottom-2 border-[0.01rem]"
-            onClick={() => onImageChange(null)}
+            onClick={handleRemoveImage}
             disabled={isLoading}
           >
             Change Image
@@ -104,6 +112,7 @@ export function ImageUploader({
         </>
       )}
       <Input
+        ref={fileInputRef}
         id="article-image"
         type="file"
         accept="image/*"

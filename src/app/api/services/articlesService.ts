@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { deleteFileFromS3 } from "@/utils/s3Service";
 import { User, Article } from "@prisma/client";
 
 export async function getAllArticles() {
@@ -47,12 +48,16 @@ export async function getArticleById(id: string) {
   return article;
 }
 
-export async function createArticle(article: CreateArticleInput, user: User) {
+export async function createArticle(
+  article: CreateArticleInput,
+  user: User,
+  imageUrl: string,
+) {
   const newArticle = {
     title: article.title,
     slug: article.title.replace(/\s+/g, "-").toLowerCase(),
     content: article.content,
-    image: article.imageFile,
+    image: imageUrl,
     tags: article.tags,
     readTime: article.readTime,
     published: article.published,
@@ -75,19 +80,22 @@ export async function updateArticle(article: Article) {
   return updatedArticle;
 }
 
-export async function deleteArticle(id: string) {
+export async function deleteArticle(article: Article) {
   const deletedArticle = await db.article.delete({
     where: {
-      id: id,
+      id: article.id,
     },
   });
+  if (article.image) {
+    await deleteFileFromS3(article.image);
+  }
   return deletedArticle;
 }
 type CreateArticleInput = {
   title: string;
   slug: string;
   content: string;
-  imageFile?: string;
+  image?: string;
   tags: string[];
   readTime: number;
   published: boolean;

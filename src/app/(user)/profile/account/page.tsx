@@ -265,7 +265,7 @@ export default function AccountForm() {
           <DialogHeader>
             <DialogTitle className="text-red-500">Delete Account</DialogTitle>
             <DialogDescription>
-              Are you absolutely sure you want to delete your account? This
+              Are you absolutely sure you want to delete your account ? This
               action cannot be undone and will permanently delete your account
               and all your content.
             </DialogDescription>
@@ -273,7 +273,7 @@ export default function AccountForm() {
           <div className="mt-4 flex space-y-4 rounded-md bg-red-50 p-4">
             <AlertCircle className="h-5 w-5 text-red-500" />
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Warning</h3>
+              <h3 className="text-sm font-medium text-red-700">Warning</h3>
               <p className="mt-2 text-sm text-red-700">This will:</p>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
                 <li>Delete your profile and personal data</li>
@@ -286,7 +286,7 @@ export default function AccountForm() {
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
-              className="border-[0.01rem]"
+              className="border-[0.01rem] text-custom-text-primary"
               disabled={isLoading}
             >
               Cancel

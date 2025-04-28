@@ -14,6 +14,7 @@ import Link from "next/link";
 // const safeHtml = DOMPurify.sanitize(userSubmittedHtml);
 
 function ArticlePage() {
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { articleslug } = useParams<{ articleslug: string }>();
   const [article, setArticle] = useState<ArticleWithAuthor>();
   const getArticle = async () => {
@@ -54,7 +55,11 @@ function ArticlePage() {
           {article.author?.name}
         </span>
         <span className="flex items-center gap-1">
-          {new Date(article.createdAt).toLocaleDateString()}
+          {new Date(article.createdAt).toLocaleDateString("en-IN", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </span>
       </section>
       <section className="mt-3 flex flex-wrap gap-3 text-sm text-custom-text-light sm:gap-4">
@@ -72,7 +77,7 @@ function ArticlePage() {
       </section>
       {article.image && (
         <Image
-          src={article.image}
+          src={NEXT_PUBLIC_AWS_URL + article.image}
           width={500}
           height={300}
           alt={article.title}

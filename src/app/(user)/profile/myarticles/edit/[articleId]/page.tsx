@@ -5,12 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  AlertCircle,
+  Loader2,
+  NavigationOff,
+  Save,
+  Send,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -43,6 +51,8 @@ export default function Editor() {
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+  const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [article, setArticle] = useState<Article | null>();
 
@@ -50,6 +60,7 @@ export default function Editor() {
     try {
       const response = await api.get(`/articles/${articleId}`);
       setArticle(response.data);
+      setImagePreview(response.data.image);
     } catch (error) {
       console.error("An error occour: ", error);
     }
@@ -80,11 +91,14 @@ export default function Editor() {
   const watchTitle = watch("title");
   const watchTags = watch("tags");
 
-  const onSaveDraft = async (isPublished: boolean) => {
+  const onSave = async (isPublished: boolean) => {
     saveArticle(isPublished);
   };
 
   const onPublish = async (isPublished: boolean) => {
+    saveArticle(isPublished);
+  };
+  const unPublish = async (isPublished: boolean) => {
     saveArticle(isPublished);
   };
 
@@ -154,6 +168,46 @@ export default function Editor() {
   const handleContentChange = (value: string) => {
     setValue("content", value, { shouldValidate: true });
   };
+  const getStatusBadge = (article: Article) => {
+    if (article?.published) {
+      return (
+        <Badge className="bg-green-600 text-lg tracking-wide hover:bg-green-700">
+          Published
+        </Badge>
+      );
+    } else if (article?.id) {
+      // If it has an ID but not published, it's unpublished
+      return (
+        <Badge
+          variant="outline"
+          className="border-red-500 text-lg tracking-wide text-red-500"
+        >
+          Unpublished
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="outline" className="border-orange-500 text-orange-500">
+          Draft
+        </Badge>
+      );
+    }
+  };
+  const handleDeleteArticle = async () => {
+    if (!article?.id) return;
+    setIsLoading(true);
+    try {
+      const response = await api.delete(`/articles/${article?.id}`);
+      toast.success("Article deleted");
+      router.push("/profile/myarticles");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Error while deleting article: ", error);
+    } finally {
+      setIsLoading(false);
+      setDeleteDialogOpen(false);
+    }
+  };
 
   const parsedTags = watchTags
     ? watchTags
@@ -164,12 +218,13 @@ export default function Editor() {
 
   return (
     <section className="">
-      <h1 className="mb-8 font-main text-3xl font-bold tracking-tight text-custom-text-primary">
+      <h1 className="mb-8 flex justify-between gap-4 font-main text-3xl font-bold tracking-tight text-custom-text-primary">
         Edit Article
+        {getStatusBadge(article!)}
       </h1>
       <form
         onSubmit={handleSubmit(() => {
-          onSaveDraft(false);
+          onSave(article?.published ?? false);
         })}
       >
         <Card className="border-0 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-lg dark:border-none md:dark:bg-zinc-900">
@@ -248,7 +303,7 @@ export default function Editor() {
               </span>
             </section>
           </CardContent>
-          <CardFooter className="flex justify-between px-6 py-4">
+          <CardFooter className="sm: flex flex-col items-start gap-8 py-4 sm:flex-row sm:justify-between">
             <Button
               type="button"
               variant="outline"
@@ -258,7 +313,49 @@ export default function Editor() {
             >
               Cancel
             </Button>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="button"
+                variant="destructive"
+                className="border-[0.01rem]"
+                onClick={() => setDeleteDialogOpen(true)}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
+                ) : (
+                  <Trash2 />
+                )}
+                Delete Article
+              </Button>
+
+              {article?.published ? (
+                <Button
+                  type="button"
+                  className="bg-amber-400 text-custom-text-primary hover:bg-amber-500"
+                  onClick={() => setUnpublishDialogOpen(true)}
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
+                  )}
+                  <NavigationOff />
+                  Unpublished
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  className="bg-green-700 hover:bg-green-600"
+                  onClick={validateAndOpenPublishDialog}
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
+                  )}
+                  <Send />
+                  Publish
+                </Button>
+              )}
               <Button
                 type="submit"
                 variant="outline"
@@ -268,20 +365,9 @@ export default function Editor() {
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                 ) : (
-                  "Save Draft"
+                  <Save />
                 )}
-              </Button>
-              <Button
-                type="button"
-                className="bg-green-700 hover:bg-green-600"
-                onClick={validateAndOpenPublishDialog}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
-                ) : (
-                  "Publish"
-                )}
+                Save
               </Button>
             </div>
           </CardFooter>
@@ -289,7 +375,9 @@ export default function Editor() {
         <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Publish Article</DialogTitle>
+              <DialogTitle className="text-custom-text-primary">
+                Publish Article
+              </DialogTitle>
               <DialogDescription>
                 Review your article before publishing. Once published, it will
                 be visible to all readers.
@@ -300,7 +388,9 @@ export default function Editor() {
                 <h3 className="text-sm font-medium text-custom-text-light">
                   Title
                 </h3>
-                <p className="font-semibold">{watchTitle}</p>
+                <p className="font-semibold text-custom-text-primary">
+                  {watchTitle}
+                </p>
               </div>
               {imagePreview && (
                 <div>
@@ -355,6 +445,105 @@ export default function Editor() {
           </DialogContent>
         </Dialog>
       </form>
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Delete Article</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-bold text-custom-text-primary">
+                "{article?.title}"
+              </span>{" "}
+              ? This action cannot be undone and will permanently delete this
+              article.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex space-y-4 rounded-md bg-red-50 p-4">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-700">Warning</h3>
+              <p className="mt-2 text-sm text-red-700">This will:</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
+                <li>Delete your article permanently</li>
+                <li>Delete all likes, comments and interactions</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              className="border-[0.01rem] text-custom-text-primary"
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteArticle}
+              disabled={isLoading}
+              className="w-full sm:w-auto"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
+              ) : (
+                "Yes, delete article"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={unpublishDialogOpen} onOpenChange={setUnpublishDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-amber-500">
+              Unpublish Article
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to unpublish{" "}
+              <span className="font-bold text-custom-text-primary">
+                "{article?.title}"
+              </span>{" "}
+              ? You can republish it at any time.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex space-y-4 rounded-md bg-amber-50 p-4">
+            <AlertCircle className="h-5 w-5 text-amber-500" />
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-amber-700">
+                Please note:
+              </h3>
+              <p className="mt-2 text-sm text-amber-700">This will:</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-700">
+                <li>Hide the article from other users.</li>
+                <li>Hide all likes, comments, and interactions.</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setUnpublishDialogOpen(false)}
+              className="border-[0.01rem] text-custom-text-primary"
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => unPublish(false)}
+              disabled={isLoading}
+              className="w-full bg-amber-600 hover:bg-amber-500 sm:w-auto"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
+              ) : (
+                "Yes, unpublish article"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
