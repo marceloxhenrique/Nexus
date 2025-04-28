@@ -9,17 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "www.wppourlesnuls.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "www.squash.io",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
+        hostname: "nexus-images-storage-be46fad2.s3.eu-west-3.amazonaws.com",
         pathname: "/**",
       },
     ],

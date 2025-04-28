@@ -72,7 +72,7 @@ export async function DELETE(
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
     // !!! Check if this article belongs to the owner of this session
-    await deleteArticle(article.id);
+    await deleteArticle(article);
     return NextResponse.json("Article Successfully deleted", { status: 200 });
   } catch (error) {
     console.error("Error while deleting article: ", error);

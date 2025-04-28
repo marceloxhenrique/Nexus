@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { TextEditor } from "./TextEditor";
 import { ImageUploader } from "./ImageUploader";
 import { api } from "@/utils/api";
+import axios from "axios";
 
 const articleSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
@@ -75,33 +76,25 @@ export function NewArticleEditor() {
     setIsLoading(true);
     try {
       const data = getValues();
-      const formData = new FormData();
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
-      formData.append("title", data.title);
-      formData.append("content", data.content);
-      if (data.tags) {
-        data.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .forEach((tag) => {
-            formData.append("tags", tag);
-          });
-      }
-      formData.append("published", "true");
-
       const response = await api.post("/articles", {
         ...data,
         tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
-        imageFile: imageFile ? imageFile.name : null,
+        image: imageFile?.name,
+        fileType: imageFile?.type,
         published: isPublished,
       });
+      const uploadUrl = await response.data;
+      const uploadImage = await axios.put(uploadUrl, imageFile, {
+        headers: {
+          "Content-Type": imageFile?.type,
+        },
+      });
+
       reset();
       if (isPublished)
         toast.success("Your article has been published successfully.");
       if (!isPublished) {
-        toast.info("Your article has been saved successfully.");
+        toast.success("Your article has been saved successfully.");
       }
       router.push("/profile/myarticles");
     } catch (error) {
@@ -164,7 +157,7 @@ export function NewArticleEditor() {
           <section className="space-y-2">
             <Label>Cover Image</Label>
             <ImageUploader
-              onImageChange={(file: any) => {
+              onImageChange={(file: File | null) => {
                 setImageFile(file);
                 if (file) {
                   // Create a preview URL for the UI

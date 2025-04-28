@@ -7,6 +7,7 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import Image from "next/image";
 const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   return (
     <Link
       href={`/${"@" + article.authorSlug}/${article.slug}`}
@@ -72,7 +73,7 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
         <div className="order-1 md:order-2 md:w-1/3">
           {article.image && (
             <Image
-              src={article.image}
+              src={NEXT_PUBLIC_AWS_URL + article.image}
               alt={article.title}
               className="h-40 w-full rounded-md object-cover"
               width={400}

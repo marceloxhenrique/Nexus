@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import {
   createArticle,
   getAllArticles,
   getArticleBySlug,
 } from "../services/articlesService";
-import { auth } from "@/lib/auth";
 import { getUserById } from "../services/userService";
 import { User } from "@prisma/client";
 import { getSession } from "@/utils/session";
+import { generatePreSignedUrl } from "@/utils/s3Service";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -40,11 +41,15 @@ export async function POST(req: NextRequest) {
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-    await createArticle(article, user);
-    return NextResponse.json(
-      { message: "Article Successfully created" },
-      { status: 201 },
+    const { uploadUrl, key } = await generatePreSignedUrl(
+      article.image,
+      article.fileType,
+      user.slug,
+      article.title,
     );
+    await createArticle(article, user, key);
+
+    return NextResponse.json(uploadUrl, { status: 201 });
   } catch (error) {
     console.error("Error while creating new article: ", error);
     return NextResponse.json(

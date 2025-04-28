@@ -14,6 +14,7 @@ import Link from "next/link";
 // const safeHtml = DOMPurify.sanitize(userSubmittedHtml);
 
 function ArticlePage() {
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { articleslug } = useParams<{ articleslug: string }>();
   const [article, setArticle] = useState<ArticleWithAuthor>();
   const getArticle = async () => {
@@ -76,7 +77,7 @@ function ArticlePage() {
       </section>
       {article.image && (
         <Image
-          src={article.image}
+          src={NEXT_PUBLIC_AWS_URL + article.image}
           width={500}
           height={300}
           alt={article.title}

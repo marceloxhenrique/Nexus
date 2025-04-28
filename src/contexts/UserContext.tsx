@@ -15,9 +15,11 @@ export const UserContext = createContext<UserType | null>(null);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data: session } = authClient.useSession();
   const [user, setUser] = useState<UserWithArticles | undefined>();
+
   const getUser = async () => {
     try {
       const response = await api.get(`/users/${session?.session.userId}`);
+
       setUser(response.data);
     } catch (error) {
       console.error("Error while getting user : ", error);
@@ -25,7 +27,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    getUser();
+    if (session?.session?.userId) {
+      getUser();
+    }
   }, [session]);
   return (
     <UserContext.Provider value={{ user, setUser }}>

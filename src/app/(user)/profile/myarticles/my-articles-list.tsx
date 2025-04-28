@@ -26,6 +26,7 @@ export function MyArticlesList({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
 
   const handleDeleteClick = (article: Article) => {
     setArticleToDelete(article);
@@ -162,7 +163,7 @@ export function MyArticlesList({
             <div className="order-1 md:order-2 md:w-1/3">
               {article.image && (
                 <Image
-                  src={article.image}
+                  src={NEXT_PUBLIC_AWS_URL + article.image}
                   alt={article.title}
                   className="h-40 w-full rounded-md object-cover"
                   width={400}
