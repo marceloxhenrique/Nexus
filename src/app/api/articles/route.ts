@@ -41,13 +41,12 @@ export async function POST(req: NextRequest) {
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-    const { uploadUrl, key } = await generatePreSignedUrl(
-      article.image,
-      article.fileType,
-      user.slug,
-      article.title,
-    );
-    await createArticle(article, user, key);
+    const fileKey =
+      `uploads/${Date.now()}-${user.slug}-${article.slug}-${article.title}`
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+    const { uploadUrl } = await generatePreSignedUrl(fileKey, article.fileType);
+    await createArticle(article, user, fileKey);
 
     return NextResponse.json(uploadUrl, { status: 201 });
   } catch (error) {

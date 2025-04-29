@@ -78,7 +78,7 @@ export function ImageUploader({
       {imagePreview ? (
         <div className="relative h-full w-full">
           <img
-            src={imagePreview || "/placeholder.svg"}
+            src={imagePreview}
             alt="Article cover"
             className="h-full w-full object-contain"
           />

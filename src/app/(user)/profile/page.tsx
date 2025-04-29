@@ -29,6 +29,7 @@ import * as z from "zod";
 import { api } from "@/utils/api";
 import { UserContext } from "@/contexts/UserContext";
 import { toast } from "sonner";
+import axios from "axios";
 
 const profileSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
@@ -48,9 +49,12 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileForm() {
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const user = useContext(UserContext)?.user;
 
   const {
@@ -71,7 +75,18 @@ export default function ProfileForm() {
   const onSubmit = async (data: ProfileFormValues) => {
     setIsLoading(true);
     try {
-      const response = await api.put(`/users/${user?.id}`, data);
+      const response = await api.put(`/users/${user?.id}`, {
+        ...data,
+        avatar: imageFile?.name,
+        fileType: imageFile?.type,
+      });
+      const uploadUrl = await response.data;
+
+      const uploadImage = await axios.put(uploadUrl, imageFile, {
+        headers: {
+          "Content-Type": imageFile?.type,
+        },
+      });
       toast.success("Profile updated");
     } catch (error) {
       console.error("Error while updating profile: ", error);
@@ -115,14 +130,12 @@ export default function ProfileForm() {
       toast.error("Please select an image file (JPG, PNG, GIF).");
       return;
     }
-
+    setImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
+        setImagePreview(e.target.result as string);
         setAvatarDialogOpen(false);
-
-        //TODO upload the file to my storage service and update the user avatar url in the database
-        toast.success("Avatar updated");
       }
     };
     reader.readAsDataURL(file);
@@ -142,10 +155,23 @@ export default function ProfileForm() {
           <CardContent className="flex flex-col gap-8">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user?.avatar!} alt={user?.name} />
-                <AvatarFallback>
-                  {user?.name?.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Article cover"
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <>
+                    <AvatarImage
+                      src={NEXT_PUBLIC_AWS_URL + user?.avatar!}
+                      alt={user?.name}
+                    />
+                    <AvatarFallback>
+                      {user?.name?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </>
+                )}
               </Avatar>
               <div>
                 <Button
