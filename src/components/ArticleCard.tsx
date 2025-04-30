@@ -18,7 +18,7 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
           <div className="mb-3 flex items-center gap-3">
             <Avatar className="flex h-8 w-8 items-center justify-center bg-zinc-200 text-sm">
               <AvatarImage
-                src={article.author.avatar!}
+                src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
                 alt={article.author.name}
               />
               <AvatarFallback>
