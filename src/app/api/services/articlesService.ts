@@ -59,10 +59,10 @@ export async function createArticle(
     content: article.content,
     image: imageUrl,
     tags: article.tags,
-    readTime: article.readTime,
     published: article.published,
     authorId: user.id,
     authorSlug: user.slug,
+    readTime: Math.ceil(article.content.length / 200),
   };
   const output = await db.article.create({
     data: newArticle,

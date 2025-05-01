@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { ArticleWithAuthor } from "@/lib/types";
 import Link from "next/link";
+import Loading from "./loading";
 
 // TODO: Sanitize HTML content
 // import DOMPurify from "dompurify";
@@ -30,20 +31,18 @@ function ArticlePage() {
   }, []);
 
   if (!article) {
-    return (
-      <p className="text-center text-custom-text-light">Article not found.</p>
-    );
+    return <Loading></Loading>;
   }
   return (
-    <main className="mx-auto max-w-3xl py-10">
+    <main className="mx-auto max-w-3xl py-20">
       <h1 className="text-4xl font-bold text-custom-text-primary">
         {article.title}
       </h1>
-      <section className="mt-4 flex items-center gap-3 text-sm text-custom-text-light">
-        <Avatar className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 text-sm">
+      <section className="flex items-center gap-3 py-8 text-sm text-custom-text-light">
+        <Avatar className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-[0.01rem] border-neutral-800 bg-zinc-200 text-sm dark:border-white">
           <Link href={`/@${article.authorSlug}`}>
             <AvatarImage
-              src={article.author.avatar!}
+              src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
               alt={article.author.name}
             />
             <AvatarFallback>
@@ -62,7 +61,7 @@ function ArticlePage() {
           })}
         </span>
       </section>
-      <section className="mt-3 flex flex-wrap gap-3 text-sm text-custom-text-light sm:gap-4">
+      <section className="mb-8 flex flex-wrap gap-3 text-sm text-custom-text-light sm:gap-4">
         <span className="flex items-center gap-1">
           {article.readTime} min read
         </span>
@@ -75,6 +74,7 @@ function ArticlePage() {
           {article.commentsCount}
         </span>
       </section>
+      <div className="mb-8 w-full max-w-3xl border-b-[0.01rem] border-neutral-400"></div>
       {article.image && (
         <Image
           src={NEXT_PUBLIC_AWS_URL + article.image}
@@ -90,9 +90,13 @@ function ArticlePage() {
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
       </article>
-      <section className="mt-6 flex flex-wrap gap-2">
+      <section className="mt-12 flex flex-wrap gap-2">
         {article.tags.map((tag) => (
-          <Badge key={tag} variant="secondary" className="text-xs">
+          <Badge
+            key={tag}
+            variant="secondary"
+            className="rounded-full px-4 py-2 text-xs"
+          >
             {tag}
           </Badge>
         ))}

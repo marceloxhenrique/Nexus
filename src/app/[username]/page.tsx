@@ -9,6 +9,7 @@ import { ArticleWithAuthor } from "@/lib/types";
 import { User, Article } from "@prisma/client";
 
 export default function PublicProfilePage() {
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const [profileUser, setProfileUser] = useState<User | undefined>();
   const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
   const [notFoundUser, setNotFoundUser] = useState(false);
@@ -47,8 +48,11 @@ export default function PublicProfilePage() {
     <section className="flex w-full grow bg-custom-background">
       <div className="mx-auto flex w-full max-w-[80rem] grow flex-col px-4 py-10">
         <div className="mb-12 flex flex-col items-start gap-8 md:flex-row">
-          <Avatar className="h-32 w-32">
-            <AvatarImage src={profileUser?.avatar!} alt={profileUser?.name} />
+          <Avatar className="h-32 w-32 border-[0.01rem] border-neutral-800 dark:border-white">
+            <AvatarImage
+              src={NEXT_PUBLIC_AWS_URL + profileUser?.avatar!}
+              alt={profileUser?.name}
+            />
             <AvatarFallback className="text-4xl">
               {profileUser?.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>

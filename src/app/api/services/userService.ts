@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { deleteFileFromS3 } from "@/utils/s3Service";
 import { User } from "@prisma/client";
 
 export async function doesUserExist(user: User) {
@@ -10,11 +11,21 @@ export async function doesUserExist(user: User) {
 }
 
 export async function updateUser(userId: string, updateData: User) {
+  const user = {
+    name: updateData.name,
+    email: updateData.email,
+    slug: updateData.slug,
+    avatar: updateData.avatar,
+    occupation: updateData.occupation,
+    bio: updateData.bio,
+    bioMarkdown: updateData.bioMarkdown,
+    socials: updateData.socials,
+  };
   return await db.user.update({
     where: {
       id: userId,
     },
-    data: updateData,
+    data: user,
   });
 }
 
@@ -71,5 +82,17 @@ export async function getUserById(userId: string) {
       id: userId,
     },
   });
+  return user;
+}
+
+export async function deleteUser(userId: string, userAvatar: string) {
+  const user = await db.user.delete({
+    where: {
+      id: userId,
+    },
+  });
+  if (userAvatar) {
+    await deleteFileFromS3(userAvatar);
+  }
   return user;
 }

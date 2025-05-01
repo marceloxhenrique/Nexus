@@ -12,21 +12,14 @@ export const s3 = new S3Client({
 
 const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
-export const generatePreSignedUrl = async (
-  fileName: string,
-  fileType: string,
-  userSlug: string,
-  articleSlug: string,
-) => {
-  const key =
-    `uploads/${Date.now()}-${userSlug}-${articleSlug.replace(/\s+/g, "-")}-${fileName.replace(/\s+/g, "-")}`.toLowerCase();
+export const generatePreSignedUrl = async (key: string, fileType: string) => {
   const command = new PutObjectCommand({
     Bucket: AWS_BUCKET_NAME,
     Key: key,
     ContentType: fileType,
   });
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
-  return { uploadUrl, key };
+  return { uploadUrl };
 };
 
 export const deleteFileFromS3 = async (fileKey: string) => {

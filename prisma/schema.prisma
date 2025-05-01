@@ -46,8 +46,8 @@ model Follow {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  follower  User? @relation(name: "UserFollowers", fields: [followerSlug], references: [slug])
-  following User? @relation(name: "UserFollowing", fields: [followingSlug], references: [slug])
+  follower  User? @relation(name: "UserFollowers", fields: [followerSlug], references: [slug], onDelete: Cascade)
+  following User? @relation(name: "UserFollowing", fields: [followingSlug], references: [slug], onDelete: Cascade)
 
   @@unique([followerSlug, followingSlug])
   @@map("follow")
@@ -68,10 +68,10 @@ model Article {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  author   User   @relation(name: "AuthorIdRelation", fields: [authorId], references: [id])
+  author   User   @relation(name: "AuthorIdRelation", fields: [authorId], references: [id], onDelete: Cascade)
   authorId String
 
-  userSlug   User   @relation(name: "UserSlugRelation", fields: [authorSlug], references: [slug])
+  userSlug   User   @relation(name: "UserSlugRelation", fields: [authorSlug], references: [slug], onDelete: Cascade)
   authorSlug String
 
   @@map("article")
