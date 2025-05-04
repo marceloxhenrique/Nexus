@@ -4,8 +4,10 @@ import {
   getArticleById,
   updateArticle,
 } from "../../services/articlesService";
-import { Article } from "@prisma/client";
+import { getUserById } from "../../services/userService";
+import { Article, User } from "@prisma/client";
 import { getSession } from "@/utils/session";
+import { generatePreSignedUrl } from "@/utils/s3Service";
 
 export async function GET(
   req: NextRequest,
@@ -38,14 +40,36 @@ export async function PUT(
   const { session, errorResponse } = await getSession(req.headers);
   if (errorResponse) return errorResponse;
   try {
+    const user: User | null = await getUserById(session.session.userId);
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     // !!! Check if this article belongs to the owner of this session
     const article = await getArticleById(articleId);
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
-
     const articleInput = await req.json();
-    await updateArticle(articleInput);
-    return NextResponse.json("Article Successfully updated", { status: 200 });
+    if (!articleInput.image) {
+      console.log("not image");
+
+      await updateArticle(articleInput);
+
+      return NextResponse.json(
+        { message: "Article created successfully" },
+        { status: 201 },
+      );
+    }
+    console.log("image");
+    const fileKey = `uploads/${Date.now()}-${user.slug}-${article.title}`
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+    const { uploadUrl } = await generatePreSignedUrl(
+      fileKey,
+      articleInput.fileType,
+    );
+    await updateArticle(article, fileKey);
+
+    return NextResponse.json(uploadUrl, { status: 200 });
   } catch (error) {
     console.error("Error while updating article: ", error);
     return NextResponse.json(

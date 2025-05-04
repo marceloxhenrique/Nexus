@@ -82,14 +82,14 @@ export default function PublicProfilePage() {
               )}
             </div>
             {profileUser?.socials && profileUser.socials.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
                 {profileUser.socials.map((social) => (
                   <a
                     key={social}
                     href={social}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-xs text-custom-text-primary hover:underline"
                   >
                     {new URL(social).hostname.replace("www.", "")}
                   </a>

@@ -41,6 +41,15 @@ export async function POST(req: NextRequest) {
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    if (!article.image) {
+      await createArticle(article, user);
+
+      return NextResponse.json(
+        { message: "Article created successfully" },
+        { status: 201 },
+      );
+    }
     const fileKey = `uploads/${Date.now()}-${user.slug}-${article.title}`
       .replace(/\s+/g, "-")
       .toLowerCase();

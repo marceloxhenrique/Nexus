@@ -16,7 +16,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
       </p>
 
       <div className="flex flex-col gap-6 py-10 lg:flex-row lg:justify-between lg:gap-0">
-        <nav className="flex w-full lg:mr-8 lg:max-w-[14rem] lg:flex-col lg:space-y-1">
+        <nav className="hidden w-full sm:flex lg:mr-8 lg:max-w-[14rem] lg:flex-col lg:space-y-1">
           <Link
             href="/profile"
             className={`${

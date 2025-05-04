@@ -33,6 +33,7 @@ import { api } from "@/utils/api";
 import { ImageUploader } from "@/components/ImageUploader";
 import { TextEditor } from "@/components/TextEditor";
 import { Article } from "@prisma/client";
+import axios from "axios";
 
 const articleSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
@@ -106,38 +107,54 @@ export default function Editor() {
     setIsLoading(true);
     try {
       const data = getValues();
-      const formData = new FormData();
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
-      formData.append("title", data.title);
-      formData.append("content", data.content);
-      if (data.tags) {
-        data.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .forEach((tag) => {
-            formData.append("tags", tag);
-          });
-      }
-      formData.append("published", "true");
-
-      const response = await api.put(`/articles/${articleId}`, {
+      const inputUser: {
+        title: string;
+        content: string;
+        tags?: string[] | undefined;
+        image?: string | null;
+        fileType?: string;
+        published: boolean;
+        id: string;
+        slug: string;
+        likes: number;
+        views: number;
+        readTime: number;
+        commentsCount: number;
+        createdAt: Date;
+        updatedAt: Date;
+        authorId: string;
+        authorSlug: string;
+      } = {
         ...data,
         tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
-        image: imageFile ? imageFile.name : article?.image,
         published: isPublished,
-        id: article?.id,
-        slug: article?.slug,
-        likes: article?.likes,
-        views: article?.views,
-        readTime: article?.readTime,
-        commentsCount: article?.commentsCount,
-        createdAt: article?.createdAt,
-        updatedAt: article?.updatedAt,
-        authorId: article?.authorId,
-        authorSlug: article?.authorSlug,
-      });
+        id: article!.id,
+        slug: article!.slug,
+        likes: article!.likes,
+        views: article!.views,
+        readTime: article!.readTime,
+        commentsCount: article!.commentsCount,
+        createdAt: article!.createdAt,
+        updatedAt: article!.updatedAt,
+        authorId: article!.authorId,
+        authorSlug: article!.authorSlug,
+      };
+      if (imageFile) {
+        inputUser.image = imageFile.name;
+        inputUser.fileType = imageFile.type;
+      }
+      const response = await api.put(`/articles/${articleId}`, inputUser);
+
+      const uploadUrl = await response.data;
+      if (uploadUrl) {
+        console.log("uploadUrl", uploadUrl);
+
+        const uploadImage = await axios.put(uploadUrl, imageFile, {
+          headers: {
+            "Content-Type": imageFile?.type,
+          },
+        });
+      }
       reset();
       if (isPublished)
         toast.success("Your article has been published successfully.");

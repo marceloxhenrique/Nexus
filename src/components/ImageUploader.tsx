@@ -18,6 +18,7 @@ export function ImageUploader({
   imagePreview,
   isLoading = false,
 }: ImageUploadProps) {
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -78,7 +79,11 @@ export function ImageUploader({
       {imagePreview ? (
         <div className="relative h-full w-full">
           <img
-            src={imagePreview}
+            src={
+              imagePreview.startsWith("uploads")
+                ? NEXT_PUBLIC_AWS_URL + imagePreview
+                : imagePreview
+            }
             alt="Article cover"
             className="h-full w-full object-contain"
           />
