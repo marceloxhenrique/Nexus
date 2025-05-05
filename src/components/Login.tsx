@@ -67,6 +67,26 @@ export default function LoginForm() {
       },
     );
   };
+
+  const handleGoogleLogin = async () => {
+    const { data } = await authClient.signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onRequest: () => {
+          setDisableFields(true);
+        },
+        onSuccess: () => {
+          reset();
+          setDisableFields(false);
+        },
+        onError: (ctx) => {
+          setDisableFields(false);
+        },
+      },
+    );
+  };
   return (
     <main className={"flex flex-col gap-6"}>
       <Card className="border-0 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-lg dark:border-none md:dark:bg-zinc-900">
@@ -87,6 +107,7 @@ export default function LoginForm() {
                 className="w-full border-[0.01rem]"
                 type="button"
                 disabled={disableFields}
+                onClick={handleGoogleLogin}
               >
                 <FcGoogle className=""></FcGoogle>
                 Continue with Google
