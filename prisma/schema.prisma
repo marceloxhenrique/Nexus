@@ -18,6 +18,7 @@ model User {
   name           String
   email          String    @unique
   slug           String    @unique
+  image          String?
   avatar         String?
   followers      Int       @default(0)
   occupation     String?

@@ -76,19 +76,31 @@ export function NewArticleEditor() {
     setIsLoading(true);
     try {
       const data = getValues();
-      const response = await api.post("/articles", {
+      const inputUser: {
+        tags: string[];
+        published: boolean;
+        title: string;
+        content: string;
+        image?: string;
+        fileType?: string;
+      } = {
         ...data,
         tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
-        image: imageFile?.name,
-        fileType: imageFile?.type,
         published: isPublished,
-      });
+      };
+      if (imageFile) {
+        inputUser.image = imageFile.name;
+        inputUser.fileType = imageFile.type;
+      }
+      const response = await api.post("/articles", inputUser);
       const uploadUrl = await response.data;
-      const uploadImage = await axios.put(uploadUrl, imageFile, {
-        headers: {
-          "Content-Type": imageFile?.type,
-        },
-      });
+      if (uploadUrl) {
+        const uploadImage = await axios.put(uploadUrl, imageFile, {
+          headers: {
+            "Content-Type": imageFile?.type,
+          },
+        });
+      }
 
       reset();
       if (isPublished)
