@@ -19,7 +19,7 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
             <Avatar className="flex h-8 w-8 items-center justify-center bg-zinc-200 text-sm">
               <AvatarImage
                 src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
-                alt={article.author.name}
+                alt="User avatar"
               />
               <AvatarFallback>
                 {article.author.name?.slice(0, 2).toUpperCase()}
