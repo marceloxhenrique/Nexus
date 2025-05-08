@@ -44,9 +44,13 @@ export default function WhoToFollow({}) {
                   </AvatarFallback>
                 </Avatar>
               </span>
-              <p className="max-w-[14em] overflow-hidden">{user?.name}</p>
+              <p className="max-w-[14em] overflow-hidden text-custom-text-primary">
+                {user?.name}
+              </p>
             </Link>
-            <Button variant={"outline"}>Follow</Button>
+            <Button variant={"outline"} className="text-custom-text-primary">
+              Follow
+            </Button>
           </li>
         ))}
       </ul>

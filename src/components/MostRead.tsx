@@ -29,7 +29,9 @@ export default function MostRead({
                 </Avatar>
                 {article.author.name}
               </span>
-              <p className="text-md pt-1 font-semibold">{article.title}</p>
+              <p className="text-md pt-1 font-semibold text-custom-text-primary">
+                {article.title}
+              </p>
               <p className="text-sm text-custom-text-light">
                 {new Date(article.createdAt).toLocaleDateString("en-IN", {
                   month: "long",
