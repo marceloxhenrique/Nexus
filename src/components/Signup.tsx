@@ -72,6 +72,48 @@ export default function SignupForm() {
       },
     );
   };
+
+  const handleGoogleSignup = async () => {
+    const { data } = await authClient.signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onRequest: () => {
+          setDisableFields(true);
+        },
+        onSuccess: () => {
+          reset();
+          setDisableFields(false);
+          route.push("/articles");
+        },
+        onError: (ctx) => {
+          setDisableFields(false);
+        },
+      },
+    );
+  };
+
+  const hendleGithubSignup = async () => {
+    const { data } = await authClient.signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onRequest: () => {
+          setDisableFields(true);
+        },
+        onSuccess: () => {
+          reset();
+          setDisableFields(false);
+          route.push("/articles");
+        },
+        onError: (ctx) => {
+          setDisableFields(false);
+        },
+      },
+    );
+  };
   return (
     <main className={"flex flex-col gap-6"}>
       <Card className="border-0 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-lg dark:border-none md:dark:bg-zinc-900">
@@ -92,6 +134,7 @@ export default function SignupForm() {
                 className="w-full border-[0.01rem]"
                 type="button"
                 disabled={disableFields}
+                onClick={handleGoogleSignup}
               >
                 <FcGoogle className=""></FcGoogle>
                 Continue with Google
@@ -101,6 +144,7 @@ export default function SignupForm() {
                 className="w-full border-[0.01rem]"
                 type="button"
                 disabled={disableFields}
+                onClick={hendleGithubSignup}
               >
                 <AiFillGithub></AiFillGithub>
                 Continue with GitHub

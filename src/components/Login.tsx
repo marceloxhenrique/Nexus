@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z
@@ -32,6 +33,7 @@ const loginSchema = z.object({
 });
 
 export default function LoginForm() {
+  const route = useRouter();
   const [displayPassword, setDisplayPassword] = useState(false);
   const [disableFields, setDisableFields] = useState(false);
   type LoginFormProps = z.infer<typeof loginSchema>;
@@ -60,6 +62,7 @@ export default function LoginForm() {
         onSuccess: () => {
           reset();
           setDisableFields(false);
+          route.push("/articles");
         },
         onError: (ctx) => {
           setDisableFields(false);
@@ -80,6 +83,28 @@ export default function LoginForm() {
         onSuccess: () => {
           reset();
           setDisableFields(false);
+          route.push("/articles");
+        },
+        onError: (ctx) => {
+          setDisableFields(false);
+        },
+      },
+    );
+  };
+
+  const hendleGithubLogin = async () => {
+    const { data } = await authClient.signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onRequest: () => {
+          setDisableFields(true);
+        },
+        onSuccess: () => {
+          reset();
+          setDisableFields(false);
+          route.push("/articles");
         },
         onError: (ctx) => {
           setDisableFields(false);
@@ -117,6 +142,7 @@ export default function LoginForm() {
                 className="w-full border-[0.01rem]"
                 type="button"
                 disabled={disableFields}
+                onClick={hendleGithubLogin}
               >
                 <AiFillGithub></AiFillGithub>
                 Continue with GitHub
