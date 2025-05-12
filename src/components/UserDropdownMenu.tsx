@@ -16,11 +16,15 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { User } from "@prisma/client";
+import { useContext } from "react";
+import { UserContext } from "@/contexts/UserContext";
 
 export function UserDropdownMenu({ user }: { user: User | undefined }) {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
+  const setUser = useContext(UserContext);
   const router = useRouter();
   const handleUserLogout = async () => {
+    setUser?.setUser(undefined);
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {

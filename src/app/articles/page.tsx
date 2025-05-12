@@ -5,9 +5,10 @@ import { api } from "@/utils/api";
 import { ArticleWithAuthor } from "@/lib/types";
 import MostRead from "@/components/MostRead";
 import WhoToFollow from "@/components/WhoToFollow";
+import Loading from "./loading";
 
 function Articles() {
-  const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
+  const [articles, setArticles] = useState<ArticleWithAuthor[] | null>(null);
   const getArticles = async () => {
     const response = await api.get("/articles");
     setArticles(response.data);
@@ -15,6 +16,7 @@ function Articles() {
   useEffect(() => {
     getArticles();
   }, []);
+  if (!articles) return <Loading></Loading>;
   return (
     <main className="my-auto flex">
       <section className="mr-10">
@@ -35,7 +37,7 @@ function Articles() {
       <div className="hidden max-w-3xl border-l-[0.01rem] border-neutral-400 xl:block dark:border-zinc-600"></div>
       <div className="max-w-[26em]">
         {articles && <MostRead articles={articles}></MostRead>}
-        {articles && <WhoToFollow></WhoToFollow>}
+        <WhoToFollow></WhoToFollow>
       </div>
     </main>
   );
