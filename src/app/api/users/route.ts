@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserBySlug } from "../services/userService";
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
   const userSlug = searchParams.get("userslug");
   if (!userSlug) {
     return NextResponse.json("Invalid user slug", { status: 400 });

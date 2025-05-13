@@ -40,7 +40,6 @@ export async function getUserByName(name: string) {
       bio: true,
       avatar: true,
       socials: true,
-      followers: true,
       occupation: true,
       bioMarkdown: true,
     },

@@ -1,5 +1,4 @@
 "use client";
-
 import type { Article } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

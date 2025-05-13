@@ -7,7 +7,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 type UserType = {
   user: UserWithArticles | undefined;
-  setUser: (e: UserWithArticles) => void;
+  setUser: (e: UserWithArticles | undefined) => void;
 };
 
 export const UserContext = createContext<UserType | null>(null);

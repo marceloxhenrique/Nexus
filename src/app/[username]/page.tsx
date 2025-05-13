@@ -1,19 +1,31 @@
 "use client";
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import ArticleCard from "@/components/ArticleCard";
 import { api } from "@/utils/api";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ArticleWithAuthor } from "@/lib/types";
 import { User, Article } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { UserContext } from "@/contexts/UserContext";
+import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 export default function PublicProfilePage() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const [profileUser, setProfileUser] = useState<User | undefined>();
+  const [isFollower, setIsFollower] = useState<boolean>(false);
+  const [followers, setFollowers] = useState<User[]>([]);
   const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
   const [notFoundUser, setNotFoundUser] = useState(false);
   const { username } = useParams<{ username: string }>();
+  const user = useContext(UserContext)?.user;
+  const router = useRouter();
 
   let userSlug = decodeURIComponent(username);
   if (!userSlug.startsWith("@")) return notFound();
@@ -38,12 +50,62 @@ export default function PublicProfilePage() {
     }
   };
 
+  const isFollowing = async (listOfFollowers: any) => {
+    const isfollowing = listOfFollowers.find(
+      (follower: any) => follower.followerSlug == user?.slug,
+    );
+    if (isfollowing !== undefined) {
+      setIsFollower(true);
+    }
+  };
+
+  const addFollower = async () => {
+    if (!user) {
+      router.push("/sign-up");
+      return;
+    }
+    try {
+      const response = await api.post(`/follow`, {
+        followingSlug: profileUser?.slug,
+      });
+      toast.success(`You are now following ${profileUser?.name}`);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Error while following user: ", error);
+    }
+  };
+
   useEffect(() => {
-    getUser();
-  }, []);
+    const getFollowers = async () => {
+      try {
+        const response = await api.get(`/follow?slug=${userSlug}`);
+        setFollowers(response.data);
+        isFollowing(response.data);
+      } catch (error) {
+        console.error("Error while retriving followers: ", error);
+      }
+    };
+    getFollowers();
+  }, [user]);
+
   if (notFoundUser) {
     return notFound();
   }
+
+  const unfollow = async () => {
+    try {
+      const response = await api.delete(`/follow/${userSlug}`);
+      toast.success(`You are no more following ${profileUser?.name}`);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Error while unfollowing user: ", error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   return (
     <section className="flex w-full grow bg-custom-background">
       <div className="mx-auto flex w-full max-w-[80rem] grow flex-col px-4 py-10">
@@ -64,21 +126,50 @@ export default function PublicProfilePage() {
                 {profileUser?.name.slice(1)}
               </h1>
               <p className="text-custom-text-light">@{profileUser?.slug}</p>
+              <p className="text-custom-text-light">
+                {profileUser?.occupation}
+              </p>
             </div>
             <p className="text-custom-text-primary">{profileUser?.bio}</p>
-            <div className="flex flex-wrap gap-4 text-custom-text-primary">
+            <div className="flex flex-wrap items-center gap-4 text-custom-text-primary">
               <span className="flex font-bold">
-                {profileUser?.followers}{" "}
+                {followers.length}
                 <p className="ml-1 text-custom-text-light">Followers</p>
               </span>
               <span className="flex font-bold">
-                {articles.length}{" "}
+                {articles.length}
                 <p className="ml-1 text-custom-text-light">Articles</p>
               </span>
-              {profileUser?.occupation && (
-                <Badge variant="outline" className="border-[0.01rem]">
-                  {profileUser.occupation}
-                </Badge>
+              {isFollower ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant={"outline"}>Following</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 space-y-4 bg-custom-background p-4">
+                    <div className="text-sm">
+                      Are you sure you want to unfollow
+                      <strong> {profileUser?.name}</strong>?
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <PopoverClose asChild className="flex-1">
+                        <Button variant="outline">Cancel</Button>
+                      </PopoverClose>
+                      <PopoverClose asChild className="flex-1">
+                        <Button
+                          variant="default"
+                          className="flex-1"
+                          onClick={unfollow}
+                        >
+                          Unfollow
+                        </Button>
+                      </PopoverClose>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Button variant={"outline"} onClick={addFollower}>
+                  Follow
+                </Button>
               )}
             </div>
             {profileUser?.socials && profileUser.socials.length > 0 && (

@@ -39,7 +39,7 @@ function ArticlePage() {
         {article.title}
       </h1>
       <section className="flex items-center gap-3 py-8 text-sm text-custom-text-light">
-        <Avatar className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-[0.01rem] border-neutral-800 bg-zinc-200 text-sm dark:border-white">
+        <Avatar className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-[0.01rem] border-neutral-800 bg-zinc-200 text-sm hover:opacity-80 dark:border-white">
           <Link href={`/@${article.authorSlug}`}>
             <AvatarImage
               src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
@@ -50,9 +50,12 @@ function ArticlePage() {
             </AvatarFallback>
           </Link>
         </Avatar>
-        <span className="font-medium text-custom-text-primary">
+        <Link
+          href={`/@${article.authorSlug}`}
+          className="font-medium text-custom-text-primary hover:underline"
+        >
           {article.author?.name}
-        </span>
+        </Link>
         <span className="flex items-center gap-1">
           {new Date(article.createdAt).toLocaleDateString("en-IN", {
             year: "numeric",
