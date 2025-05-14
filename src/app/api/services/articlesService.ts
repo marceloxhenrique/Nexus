@@ -34,6 +34,11 @@ export async function getArticleBySlug(params: string) {
           avatar: true,
         },
       },
+      articleLikes: {
+        select: {
+          userSlug: true,
+        },
+      },
     },
   });
   return articles;

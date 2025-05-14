@@ -8,6 +8,7 @@ const articleWithAuthor = Prisma.validator<Prisma.ArticleDefaultArgs>()({
         avatar: true,
       },
     },
+    articleLikes: true,
   },
 });
 export type ArticleWithAuthor = Prisma.ArticleGetPayload<
