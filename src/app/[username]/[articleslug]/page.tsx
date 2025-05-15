@@ -30,7 +30,7 @@ function ArticlePage() {
       console.error(error);
     }
   };
-  const likeArticle = async () => {
+  const addLike = async () => {
     if (!user) {
       router.push("/sign-up");
       return;
@@ -45,6 +45,15 @@ function ArticlePage() {
       toast.error("Something went wrong. Please try again.");
     }
   };
+
+  const removeLike = async () => {
+    try {
+      const response = await api.delete(`/article-likes/${article?.id}`);
+    } catch (error) {
+      console.error("Error liking article", error);
+    }
+  };
+
   useEffect(() => {
     getArticle();
   }, []);
@@ -88,13 +97,25 @@ function ArticlePage() {
           {article.readTime} min read
         </span>
         <span className="flex items-center gap-1">
-          <button
-            onClick={likeArticle}
-            className="flex cursor-pointer items-center gap-1"
-          >
-            <Heart className={`h-4 w-4`} />
-            {article.articleLikes.length}
-          </button>
+          {article.articleLikes.find((like) => like.userSlug === user?.slug) ? (
+            <button
+              onClick={removeLike}
+              className="flex cursor-pointer items-center gap-1"
+            >
+              <Heart
+                className={`h-4 w-4 fill-red-500 text-red-500 hover:fill-red-400 hover:text-red-400`}
+              />
+              {article.articleLikes.length}
+            </button>
+          ) : (
+            <button
+              onClick={addLike}
+              className="flex cursor-pointer items-center gap-1"
+            >
+              <Heart className={`h-4 w-4 hover:text-red-500`} />
+              {article.articleLikes.length}
+            </button>
+          )}
         </span>
         <span className="flex items-center gap-1">
           <MessageSquare className="h-4 w-4" />

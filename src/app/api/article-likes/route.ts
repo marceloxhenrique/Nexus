@@ -38,23 +38,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-export async function DELETE(req: NextRequest) {
-  const { session, errorResponse } = await getSession(req.headers);
-  if (errorResponse) return errorResponse;
-
-  const { articleId } = await req.json();
-  if (!articleId)
-    return NextResponse.json({ error: "Missing articleId" }, { status: 400 });
-
-  try {
-    await removeLike(articleId, session.user.slug);
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error("Error unliking article", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
