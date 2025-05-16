@@ -14,27 +14,28 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(uuid())
+  id             String         @id @default(uuid())
   name           String
-  email          String    @unique
-  slug           String    @unique
+  email          String         @unique
+  slug           String         @unique
   image          String?
   avatar         String?
   occupation     String?
-  role           String    @default("user")
+  role           String         @default("user")
   bio            String?
   bioMarkdown    String?
   socials        String[]
-  verified       Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  articles       Article[] @relation("AuthorIdRelation")
-  articlesBySlug Article[] @relation("UserSlugRelation")
+  verified       Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  articles       Article[]      @relation("AuthorIdRelation")
+  articlesBySlug Article[]      @relation("UserSlugRelation")
   emailVerified  Boolean?
   sessions       Session[]
   accounts       Account[]
-  follower       Follow[]  @relation("UserFollowers")
-  following      Follow[]  @relation("UserFollowing")
+  follower       Follow[]       @relation("UserFollowers")
+  following      Follow[]       @relation("UserFollowing")
+  likedArticles  ArticleLikes[] @relation(name: "UserLikedArticles")
 
   @@map("user")
 }
@@ -71,10 +72,23 @@ model Article {
   author   User   @relation(name: "AuthorIdRelation", fields: [authorId], references: [id], onDelete: Cascade)
   authorId String
 
-  userSlug   User   @relation(name: "UserSlugRelation", fields: [authorSlug], references: [slug], onDelete: Cascade)
-  authorSlug String
+  userSlug     User           @relation(name: "UserSlugRelation", fields: [authorSlug], references: [slug], onDelete: Cascade)
+  authorSlug   String
+  articleLikes ArticleLikes[] @relation(name: "ArticleLiked")
 
   @@map("article")
+}
+
+model ArticleLikes {
+  id        String @id @default(uuid())
+  articleId String
+  userSlug  String
+
+  article Article @relation(name: "ArticleLiked", fields: [articleId], references: [id], onDelete: Cascade)
+  user    User    @relation(name: "UserLikedArticles", fields: [userSlug], references: [slug], onDelete: Cascade)
+
+  @@unique([articleId, userSlug])
+  @@map("article_likes")
 }
 
 model Session {

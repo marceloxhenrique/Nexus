@@ -3,12 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { api } from "@/utils/api";
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useState, useEffect, useContext } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { ArticleWithAuthor } from "@/lib/types";
 import Link from "next/link";
 import Loading from "./loading";
+import { toast } from "sonner";
+import { UserContext } from "@/contexts/UserContext";
 
 // TODO: Sanitize HTML content
 // import DOMPurify from "dompurify";
@@ -18,6 +20,8 @@ function ArticlePage() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { articleslug } = useParams<{ articleslug: string }>();
   const [article, setArticle] = useState<ArticleWithAuthor>();
+  const user = useContext(UserContext)?.user;
+  const router = useRouter();
   const getArticle = async () => {
     try {
       const response = await api.get(`/articles?article=${articleslug}`);
@@ -26,6 +30,30 @@ function ArticlePage() {
       console.error(error);
     }
   };
+  const addLike = async () => {
+    if (!user) {
+      router.push("/sign-up");
+      return;
+    }
+    try {
+      const response = await api.post("/article-likes", {
+        articleId: article?.id,
+      });
+      toast.success("Article liked");
+    } catch (error) {
+      console.error("Error liking article", error);
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const removeLike = async () => {
+    try {
+      const response = await api.delete(`/article-likes/${article?.id}`);
+    } catch (error) {
+      console.error("Error liking article", error);
+    }
+  };
+
   useEffect(() => {
     getArticle();
   }, []);
@@ -69,8 +97,25 @@ function ArticlePage() {
           {article.readTime} min read
         </span>
         <span className="flex items-center gap-1">
-          <Heart className="h-4 w-4" />
-          {article.likes}
+          {article.articleLikes.find((like) => like.userSlug === user?.slug) ? (
+            <button
+              onClick={removeLike}
+              className="flex cursor-pointer items-center gap-1"
+            >
+              <Heart
+                className={`h-4 w-4 fill-red-500 text-red-500 hover:fill-red-400 hover:text-red-400`}
+              />
+              {article.articleLikes.length}
+            </button>
+          ) : (
+            <button
+              onClick={addLike}
+              className="flex cursor-pointer items-center gap-1"
+            >
+              <Heart className={`h-4 w-4 hover:text-red-500`} />
+              {article.articleLikes.length}
+            </button>
+          )}
         </span>
         <span className="flex items-center gap-1">
           <MessageSquare className="h-4 w-4" />
