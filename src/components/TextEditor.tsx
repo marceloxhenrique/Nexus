@@ -1,23 +1,7 @@
 "use client";
-
-import { useState, useEffect, useRef } from "react";
-import {
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Type,
-  Palette,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import React, { useEffect } from "react";
+import { useQuill } from "react-quilljs";
+import "quill/dist/quill.snow.css";
 
 interface TextEditorProps {
   value: string;
@@ -25,175 +9,50 @@ interface TextEditorProps {
   placeholder?: string;
 }
 
-export function TextEditor({
+const TextEditor = ({
   value,
   onChange,
   placeholder = "Write your article content here...",
-}: TextEditorProps) {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
+}: TextEditorProps) => {
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ align: [] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      [{ color: [] }, { background: [] }],
+    ],
+  };
+  let { quill, quillRef } = useQuill({ modules });
 
   useEffect(() => {
-    setMounted(true);
-    if (editorRef.current && value) {
-      editorRef.current.innerHTML = value;
-    }
-  }, []);
+    if (!quill) return;
 
-  // Update editor content when value changes from outside
+    const handleChange = () => {
+      onChange(quill.root.innerHTML);
+    };
+
+    quill.on("text-change", handleChange);
+
+    return () => {
+      quill.off("text-change", handleChange);
+    };
+  }, [quill]);
+
   useEffect(() => {
-    if (editorRef.current && value !== editorRef.current.innerHTML && mounted) {
-      editorRef.current.innerHTML = value;
+    if (value !== quill?.root.innerHTML) {
+      quill?.clipboard.dangerouslyPasteHTML(value);
     }
-  }, [value, mounted]);
-
-  const handleEditorChange = () => {
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  };
-
-  const execCommand = (command: string, value = "") => {
-    document.execCommand(command, false, value);
-    handleEditorChange();
-    editorRef.current?.focus();
-  };
-
-  const handleHeadingFormat = (level: number) => {
-    execCommand("formatBlock", `<h${level}>`);
-  };
-
-  const handleColorChange = (color: string) => {
-    execCommand("foreColor", color);
-  };
-
-  const colors = [
-    { name: "Black", value: "#000000" },
-    { name: "Dark Gray", value: "#333333" },
-    { name: "Gray", value: "#666666" },
-    { name: "Green", value: "#15803d" },
-    { name: "Blue", value: "#1d4ed8" },
-    { name: "Red", value: "#b91c1c" },
-    { name: "Purple", value: "#7e22ce" },
-  ];
+  }, [value]);
 
   return (
-    <div className="rounded-md border">
-      <div className="flex flex-wrap gap-1 border-b p-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 px-2">
-              <Type className="mr-1 h-4 w-4" />
-              <span>Heading</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => handleHeadingFormat(1)}>
-              <span className="text-xl font-bold">Heading 1</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleHeadingFormat(2)}>
-              <span className="text-lg font-bold">Heading 2</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleHeadingFormat(3)}>
-              <span className="text-md font-bold">Heading 3</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => execCommand("formatBlock", "<p>")}>
-              <span>Normal Text</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          onClick={() => execCommand("bold")}
-          className="h-8 w-8"
-        >
-          <Bold className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          onClick={() => execCommand("italic")}
-          className="h-8 w-8"
-        >
-          <Italic className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          onClick={() => execCommand("underline")}
-          className="h-8 w-8"
-        >
-          <Underline className="h-4 w-4" />
-        </Button>
-        <div className="mx-1 h-8 w-px bg-gray-200"></div>
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          onClick={() => execCommand("justifyLeft")}
-          className="h-8 w-8"
-        >
-          <AlignLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          onClick={() => execCommand("justifyCenter")}
-          className="h-8 w-8"
-        >
-          <AlignCenter className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          onClick={() => execCommand("justifyRight")}
-          className="h-8 w-8"
-        >
-          <AlignRight className="h-4 w-4" />
-        </Button>
-        <div className="mx-1 h-8 w-px bg-gray-200"></div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              type="button"
-            >
-              <Palette className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {colors.map((color) => (
-              <DropdownMenuItem
-                key={color.value}
-                onClick={() => handleColorChange(color.value)}
-              >
-                <div className="flex items-center">
-                  <div
-                    className="mr-2 h-4 w-4 rounded-full"
-                    style={{ backgroundColor: color.value }}
-                  ></div>
-                  <span>{color.name}</span>
-                </div>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <div className="flex w-full flex-wrap rounded-md">
       <div
-        ref={editorRef}
-        contentEditable
-        className="prose prose-sm overflow-wrap-anywhere min-h-[300px] max-w-none p-4 focus:outline-none"
-        onInput={handleEditorChange}
-        onBlur={handleEditorChange}
+        ref={quillRef}
+        className="overflow-wrap-anywhere w-full border-[0.01rem] border-gray-400"
       />
     </div>
   );
-}
+};
+export default TextEditor;

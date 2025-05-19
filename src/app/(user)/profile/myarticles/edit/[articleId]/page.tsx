@@ -31,7 +31,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { api } from "@/utils/api";
 import { ImageUploader } from "@/components/ImageUploader";
-import { TextEditor } from "@/components/TextEditor";
+import TextEditor from "@/components/TextEditor";
 import { Article } from "@prisma/client";
 import axios from "axios";
 
