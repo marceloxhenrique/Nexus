@@ -247,3 +247,19 @@
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+
+
+.ql-toolbar {
+  width: 100%;
+  border-radius: 0.4em 0.4em 0 0;
+}
+
+.ql-container {
+  border-radius: 0 0 0.4em 0.4em;
+}
+
+.ql-editor {
+  max-height: 500px;
+  min-height: 300px;
+}

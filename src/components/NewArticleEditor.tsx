@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { TextEditor } from "./TextEditor";
+import TextEditor from "./TextEditor";
 import { ImageUploader } from "./ImageUploader";
 import { api } from "@/utils/api";
 import axios from "axios";
