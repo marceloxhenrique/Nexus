@@ -9,14 +9,19 @@ export async function addFollower(followerSlug: string, followingSlug: string) {
   });
   return follow;
 }
+
 export async function getFollowers(followingSlug: string) {
   const followers = await db.follow.findMany({
     where: {
       followingSlug,
     },
+    include: {
+      follower: true,
+    },
   });
   return followers;
 }
+
 export async function deleteFollower(
   followerSlug: string,
   followingSlug: string,

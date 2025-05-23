@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ArticleCard from "@/components/ArticleCard";
 import { api } from "@/utils/api";
 import { useContext, useEffect, useState } from "react";
-import { ArticleWithAuthor } from "@/lib/types";
+import { ArticleWithAuthor, FollowerWithUser } from "@/lib/types";
 import { User, Article } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { UserContext } from "@/contexts/UserContext";
@@ -15,12 +15,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Followers from "./followers";
 
 export default function PublicProfilePage() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const [profileUser, setProfileUser] = useState<User | undefined>();
   const [isFollower, setIsFollower] = useState<boolean>(false);
-  const [followers, setFollowers] = useState<User[]>([]);
+  const [followers, setFollowers] = useState<FollowerWithUser[]>([]);
   const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
   const [notFoundUser, setNotFoundUser] = useState(false);
   const { username } = useParams<{ username: string }>();
@@ -50,9 +52,9 @@ export default function PublicProfilePage() {
     }
   };
 
-  const isFollowing = async (listOfFollowers: any) => {
+  const isFollowing = async (listOfFollowers: FollowerWithUser[]) => {
     const isfollowing = listOfFollowers.find(
-      (follower: any) => follower.followerSlug == user?.slug,
+      (follower: FollowerWithUser) => follower.followerSlug == user?.slug,
     );
     if (isfollowing !== undefined) {
       setIsFollower(true);
@@ -107,43 +109,52 @@ export default function PublicProfilePage() {
   }, []);
 
   return (
-    <section className="flex w-full grow bg-custom-background">
-      <div className="mx-auto flex w-full max-w-[80rem] grow flex-col px-4 py-10">
-        <div className="mb-12 flex flex-col items-start gap-8 md:flex-row">
-          <Avatar className="h-32 w-32 border-[0.01rem] border-neutral-800 dark:border-white">
-            <AvatarImage
-              src={NEXT_PUBLIC_AWS_URL + profileUser?.avatar!}
-              alt={profileUser?.name}
-            />
-            <AvatarFallback className="text-4xl">
-              {profileUser?.name.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <section className="flex-1 space-y-4">
-            <div className="flex flex-col justify-between">
-              <h1 className="text-3xl font-bold text-custom-text-primary">
+    <main className="flex w-full grow bg-custom-background">
+      <section className="mx-auto flex w-full max-w-[80rem] grow flex-col justify-between gap-4 px-0 py-10 lg:flex-row-reverse">
+        <div className="mb-12 flex flex-col gap-2 lg:w-full lg:max-w-[24rem] lg:flex-col">
+          <div className="flex items-center gap-2">
+            <Avatar className="size-15 border-[0.01rem] border-neutral-800 dark:border-white">
+              <AvatarImage
+                src={NEXT_PUBLIC_AWS_URL + profileUser?.avatar!}
+                alt={profileUser?.name}
+              />
+              <AvatarFallback className="text-4xl">
+                {profileUser?.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span>
+              <p className="text-md flex-wrap font-bold text-custom-text-primary">
                 {profileUser?.name.charAt(0).toUpperCase()}
                 {profileUser?.name.slice(1)}
-              </h1>
-              <p className="text-custom-text-light">@{profileUser?.slug}</p>
-              <p className="text-custom-text-light">
-                {profileUser?.occupation}
               </p>
-            </div>
-            <p className="text-custom-text-primary">{profileUser?.bio}</p>
-            <div className="flex flex-wrap items-center gap-4 text-custom-text-primary">
-              <span className="flex font-bold">
-                {followers.length}
-                <p className="ml-1 text-custom-text-light">Followers</p>
-              </span>
-              <span className="flex font-bold">
-                {articles.length}
-                <p className="ml-1 text-custom-text-light">Articles</p>
-              </span>
+              <p className="break-all text-custom-text-light">
+                @{profileUser?.slug}
+              </p>
+            </span>
+          </div>
+          <section className="space-y-4">
+            <p className="text-custom-text-light">{profileUser?.occupation}</p>
+            <div className="flex flex-col gap-4 text-custom-text-primary">
+              <div className="flex flex-wrap gap-3 font-bold">
+                <span className="flex">
+                  {articles.length}
+                  <p className="ml-1 text-custom-text-light">Articles</p>
+                </span>
+                <span className="flex">
+                  {followers.length}
+                  <p className="ml-1 text-custom-text-light">Followers</p>
+                </span>
+                <span className="flex">
+                  {followers.length}
+                  <p className="ml-1 text-custom-text-light">Following</p>
+                </span>
+              </div>
               {isFollower ? (
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant={"outline"}>Following</Button>
+                    <Button className="w-full max-w-sm" variant={"outline"}>
+                      Following
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-64 space-y-4 bg-custom-background p-4">
                     <div className="text-sm">
@@ -167,7 +178,7 @@ export default function PublicProfilePage() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <Button variant={"outline"} onClick={addFollower}>
+                <Button variant={"default"} onClick={addFollower}>
                   Follow
                 </Button>
               )}
@@ -188,15 +199,34 @@ export default function PublicProfilePage() {
               </div>
             )}
           </section>
+          <Followers followers={followers}></Followers>
         </div>
-        <h2 className="py-6 text-2xl font-bold text-custom-text-light">
-          Articles
-        </h2>
-        {articles &&
-          articles.map((article) => (
-            <ArticleCard key={article.id} article={article}></ArticleCard>
-          ))}
-      </div>
-    </section>
+        <section className="flex flex-col gap-4">
+          <h1 className="hidden text-3xl font-bold text-custom-text-primary lg:block">
+            {profileUser?.name.charAt(0).toUpperCase()}
+            {profileUser?.name.slice(1)}
+          </h1>
+          <Tabs defaultValue="articles">
+            <TabsList>
+              <TabsTrigger value="articles" className="cursor-pointer">
+                Articles
+              </TabsTrigger>
+              <TabsTrigger value="about" className="cursor-pointer">
+                About
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="articles">
+              {articles &&
+                articles.map((article) => (
+                  <ArticleCard key={article.id} article={article}></ArticleCard>
+                ))}
+            </TabsContent>
+            <TabsContent value="about" className="max-w-3xl">
+              <p className="py-6 text-custom-primary">{profileUser?.bio}</p>
+            </TabsContent>
+          </Tabs>
+        </section>
+      </section>
+    </main>
   );
 }
