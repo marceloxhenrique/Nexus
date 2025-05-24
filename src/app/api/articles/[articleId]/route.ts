@@ -49,16 +49,12 @@ export async function PUT(
       return NextResponse.json("Article not found", { status: 404 });
     const articleInput = await req.json();
     if (!articleInput.image) {
-      console.log("not image");
-
       await updateArticle(articleInput);
-
       return NextResponse.json(
         { message: "Article created successfully" },
         { status: 201 },
       );
     }
-    console.log("image");
     const fileKey = `uploads/${Date.now()}-${user.slug}-${article.title}`
       .replace(/\s+/g, "-")
       .toLowerCase();
