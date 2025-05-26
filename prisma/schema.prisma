@@ -36,6 +36,7 @@ model User {
   follower       Follow[]       @relation("UserFollowers")
   following      Follow[]       @relation("UserFollowing")
   likedArticles  ArticleLikes[] @relation(name: "UserLikedArticles")
+  Comment        Comment[]      @relation("CommentAuthor")
 
   @@map("user")
 }
@@ -76,7 +77,22 @@ model Article {
   authorSlug   String
   articleLikes ArticleLikes[] @relation(name: "ArticleLiked")
 
+  comments Comment[] @relation("Comments")
+
   @@map("article")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  authorId  String
+  articleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(name: "CommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  article   Article  @relation(name: "Comments", fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@map("comment")
 }
 
 model ArticleLikes {

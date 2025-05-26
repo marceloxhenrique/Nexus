@@ -58,6 +58,7 @@ export default function Editor() {
   const [article, setArticle] = useState<Article | null>();
 
   const getArticle = async () => {
+    console.log("Here id");
     try {
       const response = await api.get(`/articles/${articleId}`);
       setArticle(response.data);
@@ -147,8 +148,6 @@ export default function Editor() {
 
       const uploadUrl = await response.data;
       if (uploadUrl) {
-        console.log("uploadUrl", uploadUrl);
-
         const uploadImage = await axios.put(uploadUrl, imageFile, {
           headers: {
             "Content-Type": imageFile?.type,

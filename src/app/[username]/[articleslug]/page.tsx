@@ -11,6 +11,7 @@ import Link from "next/link";
 import Loading from "./loading";
 import { toast } from "sonner";
 import { UserContext } from "@/contexts/UserContext";
+import { CommentsSection } from "@/components/CommentsSection";
 
 // TODO: Sanitize HTML content
 // import DOMPurify from "dompurify";
@@ -149,6 +150,7 @@ function ArticlePage() {
           </Badge>
         ))}
       </section>
+      <CommentsSection articleId={article?.id}></CommentsSection>
     </main>
   );
 }
