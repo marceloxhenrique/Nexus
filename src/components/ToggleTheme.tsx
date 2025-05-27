@@ -7,6 +7,7 @@ const ToggleTheme = () => {
   const { theme, setTheme } = themeContext!;
   const handleThemeChange = () => {
     setTheme(theme !== "dark" ? "dark" : "light");
+    localStorage.setItem("NexusTheme", theme !== "dark" ? "dark" : "light");
   };
   return (
     <div
@@ -23,23 +24,3 @@ const ToggleTheme = () => {
 };
 
 export default ToggleTheme;
-
-const article: Article = {
-  title: "8 Advanced JavaScript Features to Know",
-  content:
-    "JavaScript (JS) has come a long way since its inception as a simple scripting language. With the release of ECMAScript...",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  likes: 34,
-  image:
-    "https://www.squash.io/wp-content/uploads/2023/11/javascript-series.jpg",
-};
-
-type Article = {
-  title: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-  likes: number;
-  image: string;
-};

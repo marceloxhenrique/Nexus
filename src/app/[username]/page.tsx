@@ -178,7 +178,11 @@ export default function PublicProfilePage() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <Button variant={"default"} onClick={addFollower}>
+                <Button
+                  variant={"default"}
+                  onClick={addFollower}
+                  className="max-w-sm"
+                >
                   Follow
                 </Button>
               )}
@@ -216,13 +220,20 @@ export default function PublicProfilePage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="articles">
-              {articles &&
+              {articles.length > 0 ? (
                 articles.map((article) => (
                   <ArticleCard key={article.id} article={article}></ArticleCard>
-                ))}
+                ))
+              ) : (
+                <p className="pl-2 text-custom-text-light">No articles yet</p>
+              )}
             </TabsContent>
             <TabsContent value="about" className="max-w-3xl">
-              <p className="py-6 text-custom-primary">{profileUser?.bio}</p>
+              {profileUser?.bio ? (
+                <p className="py-6 text-custom-primary">{profileUser?.bio}</p>
+              ) : (
+                <p className="pl-2 text-custom-text-light">No bio yet</p>
+              )}
             </TabsContent>
           </Tabs>
         </section>

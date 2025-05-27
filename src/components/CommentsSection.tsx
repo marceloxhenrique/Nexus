@@ -65,9 +65,7 @@ export function CommentsSection({ articleId }: { articleId: string }) {
   });
   const getComments = async () => {
     try {
-      console.log("Here articleId", articleId);
       const response = await api.get(`/comments?articleId=${articleId}`);
-      console.log("Here response", response.data);
       setComments(response.data);
     } catch (error) {
       console.error("Error getting comments: ", error);
@@ -100,7 +98,6 @@ export function CommentsSection({ articleId }: { articleId: string }) {
     <section className="mt-12 pt-8 text-custom-text-primary">
       <div className="mb-8 w-full max-w-3xl border-b-[0.01rem] border-neutral-400"></div>
       <h2 className="mb-6 text-2xl font-bold">Comments</h2>
-
       <Card className="mb-10 bg-custom-background">
         <CardContent className="">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -123,17 +120,13 @@ export function CommentsSection({ articleId }: { articleId: string }) {
           </form>
         </CardContent>
       </Card>
-
       {comments?.map((comment) => (
         <CommentItem key={comment.id} comment={comment} />
       ))}
-
       {comments?.length === 0 && (
-        <div className="py-12 text-center">
-          <h3 className="mb-2 text-lg font-medium text-gray-900">
-            No Comments yet
-          </h3>
-          <p className="text-gray-600">Be the first to share your thoughts!</p>
+        <div className="py-12 text-center text-custom-text-light">
+          <h3 className="mb-2 text-lg font-medium">No Comments yet</h3>
+          <p>Be the first to share your thoughts!</p>
         </div>
       )}
     </section>
@@ -162,7 +155,7 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
     <section className="mb-6 flex flex-col gap-3 border-b-[0.01rem] border-neutral-400 pb-4">
       <div className="flex justify-between">
         <Link
-          href={`/${comment.author.slug}`}
+          href={`/@${comment.author.slug}`}
           className="flex items-center gap-2"
         >
           <Avatar className="h-10 w-10 flex-shrink-0">
