@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Loader2, Save, Send } from "lucide-react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -95,7 +96,7 @@ export function NewArticleEditor() {
       const response = await api.post("/articles", inputUser);
       const uploadUrl = await response.data;
       if (uploadUrl) {
-        const uploadImage = await axios.put(uploadUrl, imageFile, {
+        axios.put(uploadUrl, imageFile, {
           headers: {
             "Content-Type": imageFile?.type,
           },
@@ -110,6 +111,7 @@ export function NewArticleEditor() {
       }
       router.push("/profile/myarticles");
     } catch (error) {
+      console.error("Error while creating new article: ", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -295,7 +297,7 @@ export function NewArticleEditor() {
                 <h3 className="mb-2 text-sm font-medium text-custom-text-light">
                   Cover Image
                 </h3>
-                <img
+                <Image
                   src={imagePreview || "/placeholder.svg"}
                   alt="Article cover"
                   className="h-32 w-full rounded-md object-cover"

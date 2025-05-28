@@ -48,7 +48,7 @@ export default function LoginForm() {
 
   const handleLoginform = async (userInfo: LoginFormProps) => {
     const { email, password } = userInfo;
-    const { data, error } = await authClient.signIn.email(
+    await authClient.signIn.email(
       {
         email,
         password,
@@ -64,7 +64,7 @@ export default function LoginForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: (ctx) => {
+        onError: () => {
           setDisableFields(false);
         },
       },
@@ -72,7 +72,7 @@ export default function LoginForm() {
   };
 
   const handleGoogleLogin = async () => {
-    const { data } = await authClient.signIn.social(
+    await authClient.signIn.social(
       {
         provider: "google",
       },
@@ -85,7 +85,7 @@ export default function LoginForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: (ctx) => {
+        onError: () => {
           setDisableFields(false);
         },
       },
@@ -93,7 +93,7 @@ export default function LoginForm() {
   };
 
   const hendleGithubLogin = async () => {
-    const { data } = await authClient.signIn.social(
+    await authClient.signIn.social(
       {
         provider: "github",
       },
@@ -106,7 +106,7 @@ export default function LoginForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: (ctx) => {
+        onError: () => {
           setDisableFields(false);
         },
       },

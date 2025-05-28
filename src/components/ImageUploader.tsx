@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface ImageUploadProps {
   onImageChange: (file: File | null) => void;
@@ -78,7 +79,7 @@ export function ImageUploader({
     >
       {imagePreview ? (
         <div className="relative h-full w-full">
-          <img
+          <Image
             src={
               imagePreview.startsWith("uploads")
                 ? NEXT_PUBLIC_AWS_URL + imagePreview

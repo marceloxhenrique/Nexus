@@ -9,11 +9,7 @@ interface TextEditorProps {
   placeholder?: string;
 }
 
-const TextEditor = ({
-  value,
-  onChange,
-  placeholder = "Write your article content here...",
-}: TextEditorProps) => {
+const TextEditor = ({ value, onChange }: TextEditorProps) => {
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -24,7 +20,7 @@ const TextEditor = ({
       [{ color: [] }, { background: [] }],
     ],
   };
-  let { quill, quillRef } = useQuill({ modules });
+  const { quill, quillRef } = useQuill({ modules });
 
   useEffect(() => {
     if (!quill) return;

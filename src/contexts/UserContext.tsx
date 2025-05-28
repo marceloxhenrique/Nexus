@@ -16,18 +16,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data: session } = authClient.useSession();
   const [user, setUser] = useState<UserWithArticles | undefined>();
 
-  const getUser = async () => {
-    try {
-      const response = await api.get(`/users/${session?.session.userId}`);
-
-      setUser(response.data);
-    } catch (error) {
-      console.error("Error while getting user : ", error);
-    }
-  };
-
   useEffect(() => {
     if (session?.session?.userId) {
+      const getUser = async () => {
+        try {
+          const response = await api.get(`/users/${session?.session.userId}`);
+
+          setUser(response.data);
+        } catch (error) {
+          console.error("Error while getting user : ", error);
+        }
+      };
       getUser();
     }
   }, [session]);

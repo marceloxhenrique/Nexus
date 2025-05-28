@@ -18,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { api } from "@/utils/api";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +49,7 @@ export default function SignupForm() {
 
   const handleSignupform = async (userInfo: SignupFormProps) => {
     const { email, password, name } = userInfo;
-    const { data, error } = await authClient.signUp.email(
+    await authClient.signUp.email(
       {
         email,
         password,
@@ -66,7 +65,7 @@ export default function SignupForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: (ctx) => {
+        onError: () => {
           setDisableFields(false);
         },
       },
@@ -74,7 +73,7 @@ export default function SignupForm() {
   };
 
   const handleGoogleSignup = async () => {
-    const { data } = await authClient.signIn.social(
+    await authClient.signIn.social(
       {
         provider: "google",
       },
@@ -87,7 +86,7 @@ export default function SignupForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: (ctx) => {
+        onError: () => {
           setDisableFields(false);
         },
       },
@@ -95,7 +94,7 @@ export default function SignupForm() {
   };
 
   const hendleGithubSignup = async () => {
-    const { data } = await authClient.signIn.social(
+    await authClient.signIn.social(
       {
         provider: "github",
       },
@@ -108,7 +107,7 @@ export default function SignupForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: (ctx) => {
+        onError: () => {
           setDisableFields(false);
         },
       },

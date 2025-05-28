@@ -1,6 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import { api } from "@/utils/api";
 import { useEffect, useState } from "react";
 
@@ -45,7 +44,11 @@ export default function WhoToFollow() {
                 <span className="flex items-center gap-2 text-sm font-medium text-custom-text-primary">
                   <Avatar className="flex items-center justify-center bg-zinc-200 text-sm">
                     <AvatarImage
-                      src={NEXT_PUBLIC_AWS_URL + user?.avatar!}
+                      src={
+                        user?.avatar
+                          ? NEXT_PUBLIC_AWS_URL + user?.avatar
+                          : undefined
+                      }
                       alt="User avatar"
                     />
                     <AvatarFallback>

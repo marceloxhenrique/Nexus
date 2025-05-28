@@ -36,7 +36,7 @@ export function MyArticlesList({
     if (!articleToDelete?.id) return;
     setIsLoading(true);
     try {
-      const response = await api.delete(`/articles/${articleToDelete?.id}`);
+      await api.delete(`/articles/${articleToDelete?.id}`);
       toast.success("Article deleted");
     } catch (error) {
       toast.error("Something went wrong. Please try again.");

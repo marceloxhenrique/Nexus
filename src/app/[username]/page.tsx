@@ -29,28 +29,44 @@ export default function PublicProfilePage() {
   const user = useContext(UserContext)?.user;
   const router = useRouter();
 
+  useEffect(() => {
+    const getFollowers = async () => {
+      try {
+        const response = await api.get(`/follow?slug=${userSlug}`);
+        setFollowers(response.data);
+        isFollowing(response.data);
+      } catch (error) {
+        console.error("Error while retriving followers: ", error);
+      }
+    };
+    getFollowers();
+    const getUser = async () => {
+      try {
+        const response = await api.get(`/users?userslug=${userSlug}`);
+        setProfileUser(response.data);
+        const formatedArticles = response.data.articles.map(
+          (article: Article) => ({
+            ...article,
+            author: {
+              name: response.data.name,
+              avatar: response.data.avatar,
+            },
+          }),
+        );
+        setArticles(formatedArticles);
+      } catch (error) {
+        console.error("Error while retriving user: ", error);
+        setNotFoundUser(true);
+      }
+    };
+    getUser();
+  }, [user]);
+
   let userSlug = decodeURIComponent(username);
   if (!userSlug.startsWith("@")) return notFound();
   userSlug = userSlug.slice(1);
-  const getUser = async () => {
-    try {
-      const response = await api.get(`/users?userslug=${userSlug}`);
-      setProfileUser(response.data);
-      const formatedArticles = response.data.articles.map(
-        (article: Article) => ({
-          ...article,
-          author: {
-            name: response.data.name,
-            avatar: response.data.avatar,
-          },
-        }),
-      );
-      setArticles(formatedArticles);
-    } catch (error) {
-      console.error("Error while retriving user: ", error);
-      setNotFoundUser(true);
-    }
-  };
+
+  // useEffect(() => {}, []);
 
   const isFollowing = async (listOfFollowers: FollowerWithUser[]) => {
     const isfollowing = listOfFollowers.find(
@@ -67,7 +83,7 @@ export default function PublicProfilePage() {
       return;
     }
     try {
-      const response = await api.post(`/follow`, {
+      await api.post(`/follow`, {
         followingSlug: profileUser?.slug,
       });
       toast.success(`You are now following ${profileUser?.name}`);
@@ -77,36 +93,19 @@ export default function PublicProfilePage() {
     }
   };
 
-  useEffect(() => {
-    const getFollowers = async () => {
-      try {
-        const response = await api.get(`/follow?slug=${userSlug}`);
-        setFollowers(response.data);
-        isFollowing(response.data);
-      } catch (error) {
-        console.error("Error while retriving followers: ", error);
-      }
-    };
-    getFollowers();
-  }, [user]);
-
   if (notFoundUser) {
     return notFound();
   }
 
   const unfollow = async () => {
     try {
-      const response = await api.delete(`/follow/${userSlug}`);
+      await api.delete(`/follow/${userSlug}`);
       toast.success(`You are no more following ${profileUser?.name}`);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       console.error("Error while unfollowing user: ", error);
     }
   };
-
-  useEffect(() => {
-    getUser();
-  }, []);
 
   return (
     <main className="flex w-full grow bg-custom-background">
@@ -115,7 +114,11 @@ export default function PublicProfilePage() {
           <div className="flex items-center gap-2">
             <Avatar className="size-15 border-[0.01rem] border-neutral-800 dark:border-white">
               <AvatarImage
-                src={NEXT_PUBLIC_AWS_URL + profileUser?.avatar!}
+                src={
+                  profileUser?.avatar
+                    ? NEXT_PUBLIC_AWS_URL + profileUser.avatar
+                    : undefined
+                }
                 alt={profileUser?.name}
               />
               <AvatarFallback className="text-4xl">
@@ -178,7 +181,11 @@ export default function PublicProfilePage() {
                   </PopoverContent>
                 </Popover>
               ) : (
-                <Button variant={"default"} onClick={addFollower}>
+                <Button
+                  variant={"default"}
+                  onClick={addFollower}
+                  className="max-w-sm"
+                >
                   Follow
                 </Button>
               )}
@@ -216,13 +223,20 @@ export default function PublicProfilePage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="articles">
-              {articles &&
+              {articles.length > 0 ? (
                 articles.map((article) => (
                   <ArticleCard key={article.id} article={article}></ArticleCard>
-                ))}
+                ))
+              ) : (
+                <p className="pl-2 text-custom-text-light">No articles yet</p>
+              )}
             </TabsContent>
             <TabsContent value="about" className="max-w-3xl">
-              <p className="py-6 text-custom-primary">{profileUser?.bio}</p>
+              {profileUser?.bio ? (
+                <p className="py-6 text-custom-primary">{profileUser?.bio}</p>
+              ) : (
+                <p className="pl-2 text-custom-text-light">No bio yet</p>
+              )}
             </TabsContent>
           </Tabs>
         </section>

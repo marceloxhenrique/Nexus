@@ -19,7 +19,7 @@ function Articles() {
   if (!articles) return <Loading></Loading>;
   return (
     <main className="my-auto flex">
-      <section className="mr-10">
+      <section className="lg:mr-10">
         <h1 className="mt-18 font-secondary text-4xl font-bold tracking-tight text-custom-text-primary">
           Explore Articles
         </h1>

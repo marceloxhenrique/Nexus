@@ -10,6 +10,14 @@ export const ThemeContext = createContext<ThemeType | null>(null);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<string>("light");
+
+  useEffect(() => {
+    const userTheme = localStorage.getItem("NexusTheme");
+    if (userTheme) {
+      setTheme(userTheme);
+    }
+  }, []);
+
   useEffect(() => {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
