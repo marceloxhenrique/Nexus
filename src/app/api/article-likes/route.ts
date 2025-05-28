@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/utils/session";
-import { addLike, getLikes, removeLike } from "../services/articleLikesService";
+import { addLike, getLikes } from "../services/articleLikesService";
 
 export async function GET(req: NextRequest) {
   const articleId = req.nextUrl.searchParams.get("articleId");
@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const likes = await getLikes(articleId);
     return NextResponse.json(likes);
   } catch (error) {
+    console.error("Error getting likes: ", error);
     return NextResponse.json({ error: "Error getting likes" }, { status: 500 });
   }
 }

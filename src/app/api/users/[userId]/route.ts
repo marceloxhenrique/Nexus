@@ -74,7 +74,7 @@ export async function DELETE(
   const userId = await paramsUserId.params;
   if (!userId)
     return NextResponse.json({ error: "User ID is required" }, { status: 400 });
-  const { session, errorResponse } = await getSession(req.headers);
+  const { errorResponse } = await getSession(req.headers);
   if (errorResponse) return errorResponse;
   const user = await getUserById(userId.userId);
   try {

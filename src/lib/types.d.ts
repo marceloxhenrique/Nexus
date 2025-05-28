@@ -1,4 +1,4 @@
-import { Follow, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 const articleWithAuthor = Prisma.validator<Prisma.ArticleDefaultArgs>()({
   include: {

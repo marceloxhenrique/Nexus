@@ -83,11 +83,9 @@ export async function DELETE(
   if (!articleId)
     return NextResponse.json("Invalid Article ID", { status: 400 });
 
-  const { session, errorResponse } = await getSession(req.headers);
+  const { errorResponse } = await getSession(req.headers);
   if (errorResponse) return errorResponse;
   try {
-    const headers = req.headers;
-
     const article: Article | null = await getArticleById(articleId);
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });

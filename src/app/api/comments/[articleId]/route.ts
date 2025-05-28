@@ -10,7 +10,7 @@ export async function DELETE(
     return NextResponse.json({ message: "Missing required fields" });
   }
   try {
-    const comment = await deleteComment(commentId);
+    await deleteComment(commentId);
     return NextResponse.json("Comment deleted successfully", { status: 200 });
   } catch (error) {
     console.error("Error deleting comment: ", error);

@@ -30,6 +30,7 @@ import { api } from "@/utils/api";
 import { UserContext } from "@/contexts/UserContext";
 import { toast } from "sonner";
 import axios from "axios";
+import Image from "next/image";
 
 const profileSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
@@ -82,7 +83,7 @@ export default function ProfileForm() {
       });
       const uploadUrl = await response.data;
 
-      const uploadImage = await axios.put(uploadUrl, imageFile, {
+      await axios.put(uploadUrl, imageFile, {
         headers: {
           "Content-Type": imageFile?.type,
         },
@@ -156,15 +157,21 @@ export default function ProfileForm() {
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
                 {imagePreview ? (
-                  <img
+                  <Image
                     src={imagePreview}
-                    alt="Article cover"
+                    alt="User avatar"
+                    width={200}
+                    height={200}
                     className="h-full w-full object-contain"
                   />
                 ) : (
                   <>
                     <AvatarImage
-                      src={NEXT_PUBLIC_AWS_URL + user?.avatar!}
+                      src={
+                        user?.avatar
+                          ? NEXT_PUBLIC_AWS_URL + user?.avatar
+                          : undefined
+                      }
                       alt={user?.name}
                     />
                     <AvatarFallback>

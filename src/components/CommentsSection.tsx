@@ -63,16 +63,16 @@ export function CommentsSection({ articleId }: { articleId: string }) {
       content: "",
     },
   });
-  const getComments = async () => {
-    try {
-      const response = await api.get(`/comments?articleId=${articleId}`);
-      setComments(response.data);
-    } catch (error) {
-      console.error("Error getting comments: ", error);
-    }
-  };
 
   useEffect(() => {
+    const getComments = async () => {
+      try {
+        const response = await api.get(`/comments?articleId=${articleId}`);
+        setComments(response.data);
+      } catch (error) {
+        console.error("Error getting comments: ", error);
+      }
+    };
     getComments();
   }, []);
 
@@ -86,7 +86,7 @@ export function CommentsSection({ articleId }: { articleId: string }) {
       articleId: articleId,
     };
     try {
-      const response = await api.post("/comments", newComment);
+      await api.post("/comments", newComment);
       reset();
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
@@ -141,7 +141,7 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
   const handleDeleteComment = async () => {
     setIsLoading(true);
     try {
-      const response = await api.delete(`/comments/${comment.id}`);
+      await api.delete(`/comments/${comment.id}`);
       toast.success("Comment deleted successfully");
     } catch (error) {
       console.error("Error deleting comment: ", error);

@@ -55,7 +55,7 @@ export default function AccountForm() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  let user: UserWithArticles | undefined = useContext(UserContext)?.user;
+  const user: UserWithArticles | undefined = useContext(UserContext)?.user;
   const router = useRouter();
   const {
     register,
@@ -74,7 +74,7 @@ export default function AccountForm() {
   const onSubmit = async (data: PasswordFormValues) => {
     setIsLoading(true);
     try {
-      const response = await api.put(`/users/${user?.id}/password`, data);
+      await api.put(`/users/${user?.id}/password`, data);
       toast.success("Your password has been updated successfully.");
       reset();
     } catch (error) {

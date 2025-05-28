@@ -34,7 +34,7 @@ import { ImageUploader } from "@/components/ImageUploader";
 import TextEditor from "@/components/TextEditor";
 import { Article } from "@prisma/client";
 import axios from "axios";
-
+import Image from "next/image";
 const articleSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
   content: z
@@ -57,18 +57,16 @@ export default function Editor() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [article, setArticle] = useState<Article | null>();
 
-  const getArticle = async () => {
-    console.log("Here id");
-    try {
-      const response = await api.get(`/articles/${articleId}`);
-      setArticle(response.data);
-      setImagePreview(response.data.image);
-    } catch (error) {
-      console.error("An error occour: ", error);
-    }
-  };
-
   useEffect(() => {
+    const getArticle = async () => {
+      try {
+        const response = await api.get(`/articles/${articleId}`);
+        setArticle(response.data);
+        setImagePreview(response.data.image);
+      } catch (error) {
+        console.error("An error occour: ", error);
+      }
+    };
     getArticle();
   }, []);
 
@@ -148,7 +146,7 @@ export default function Editor() {
 
       const uploadUrl = await response.data;
       if (uploadUrl) {
-        const uploadImage = await axios.put(uploadUrl, imageFile, {
+        await axios.put(uploadUrl, imageFile, {
           headers: {
             "Content-Type": imageFile?.type,
           },
@@ -162,6 +160,7 @@ export default function Editor() {
       }
       router.push("/profile/myarticles");
     } catch (error) {
+      console.error("Error while publishing article: ", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -213,7 +212,7 @@ export default function Editor() {
     if (!article?.id) return;
     setIsLoading(true);
     try {
-      const response = await api.delete(`/articles/${article?.id}`);
+      await api.delete(`/articles/${article?.id}`);
       toast.success("Article deleted");
       router.push("/profile/myarticles");
     } catch (error) {
@@ -265,7 +264,7 @@ export default function Editor() {
             <section className="space-y-2">
               <Label>Cover Image</Label>
               <ImageUploader
-                onImageChange={(file: any) => {
+                onImageChange={(file: File | null) => {
                   setImageFile(file);
                   if (file) {
                     // Create a preview URL for the UI
@@ -413,7 +412,7 @@ export default function Editor() {
                   <h3 className="mb-2 text-sm font-medium text-custom-text-light">
                     Cover Image
                   </h3>
-                  <img
+                  <Image
                     src={imagePreview || "/placeholder.svg"}
                     alt="Article cover"
                     className="h-32 w-full rounded-md object-cover"

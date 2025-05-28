@@ -23,21 +23,14 @@ function ArticlePage() {
   const [article, setArticle] = useState<ArticleWithAuthor>();
   const user = useContext(UserContext)?.user;
   const router = useRouter();
-  const getArticle = async () => {
-    try {
-      const response = await api.get(`/articles?article=${articleslug}`);
-      setArticle(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
   const addLike = async () => {
     if (!user) {
       router.push("/sign-up");
       return;
     }
     try {
-      const response = await api.post("/article-likes", {
+      await api.post("/article-likes", {
         articleId: article?.id,
       });
       toast.success("Article liked");
@@ -49,15 +42,25 @@ function ArticlePage() {
 
   const removeLike = async () => {
     try {
-      const response = await api.delete(`/article-likes/${article?.id}`);
+      await api.delete(`/article-likes/${article?.id}`);
     } catch (error) {
       console.error("Error liking article", error);
     }
   };
 
   useEffect(() => {
-    getArticle();
-  }, []);
+    if (articleslug) {
+      const getArticle = async () => {
+        try {
+          const response = await api.get(`/articles?article=${articleslug}`);
+          setArticle(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      getArticle();
+    }
+  }, [articleslug]);
 
   if (!article) {
     return <Loading></Loading>;
