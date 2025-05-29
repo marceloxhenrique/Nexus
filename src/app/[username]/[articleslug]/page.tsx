@@ -72,10 +72,10 @@ function ArticlePage() {
       </h1>
       <section className="flex items-center gap-3 py-8 text-sm text-custom-text-light">
         <Avatar className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-[0.01rem] border-neutral-800 bg-zinc-200 text-sm hover:opacity-80 dark:border-white">
-          <Link href={`/@${article.authorSlug}`}>
+          <Link href={`/@${article.authorSlug}`} className="flex size-full">
             <AvatarImage
               src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
-              alt={article.author.name}
+              alt={"Author avatar"}
             />
             <AvatarFallback>
               {article.author.name.slice(0, 2).toUpperCase()}

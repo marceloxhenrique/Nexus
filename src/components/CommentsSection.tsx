@@ -98,8 +98,8 @@ export function CommentsSection({ articleId }: { articleId: string }) {
     <section className="mt-12 pt-8 text-custom-text-primary">
       <div className="mb-8 w-full max-w-3xl border-b-[0.01rem] border-neutral-400"></div>
       <h2 className="mb-6 text-2xl font-bold">Comments</h2>
-      <Card className="mb-10 bg-custom-background">
-        <CardContent className="">
+      <Card className="mb-10 border-0 bg-custom-background shadow-none sm:border sm:shadow-sm">
+        <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Textarea
               {...register("content")}
