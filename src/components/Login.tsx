@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z
@@ -65,6 +66,7 @@ export default function LoginForm() {
           route.push("/articles");
         },
         onError: () => {
+          toast.error("Something went wrong. Please check your credentials.");
           setDisableFields(false);
         },
       },
@@ -86,6 +88,7 @@ export default function LoginForm() {
           route.push("/articles");
         },
         onError: () => {
+          toast.error("Something went wrong. Please check your credentials.");
           setDisableFields(false);
         },
       },
@@ -107,6 +110,7 @@ export default function LoginForm() {
           route.push("/articles");
         },
         onError: () => {
+          toast.error("Something went wrong. Please check your credentials.");
           setDisableFields(false);
         },
       },

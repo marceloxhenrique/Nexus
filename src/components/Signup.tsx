@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const signupSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
@@ -66,6 +67,7 @@ export default function SignupForm() {
           route.push("/articles");
         },
         onError: () => {
+          toast.error("Something went wrong. Please check your credentials.");
           setDisableFields(false);
         },
       },
@@ -87,6 +89,7 @@ export default function SignupForm() {
           route.push("/articles");
         },
         onError: () => {
+          toast.error("Something went wrong. Please check your credentials.");
           setDisableFields(false);
         },
       },
@@ -108,6 +111,7 @@ export default function SignupForm() {
           route.push("/articles");
         },
         onError: () => {
+          toast.error("Something went wrong. Please check your credentials.");
           setDisableFields(false);
         },
       },

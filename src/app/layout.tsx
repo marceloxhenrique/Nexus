@@ -33,6 +33,7 @@ export default function RootLayout({
           <UserProvider>
             <section className="flex min-h-screen flex-col bg-custom-background-home">
               <Navbar></Navbar>
+              <span className="h-16"></span>
               {children}
               <Toaster position="top-center" richColors={true} />
               <Footer></Footer>
