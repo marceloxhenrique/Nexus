@@ -7,6 +7,16 @@ export async function addLike(articleId: string, userSlug: string) {
       userSlug,
     },
   });
+  await db.article.update({
+    where: {
+      id: articleId,
+    },
+    data: {
+      likes: {
+        increment: 1,
+      },
+    },
+  });
   return like;
 }
 
@@ -29,6 +39,16 @@ export async function removeLike(articleId: string, userSlug: string) {
       articleId_userSlug: {
         articleId,
         userSlug,
+      },
+    },
+  });
+  await db.article.update({
+    where: {
+      id: articleId,
+    },
+    data: {
+      likes: {
+        decrement: 1,
       },
     },
   });

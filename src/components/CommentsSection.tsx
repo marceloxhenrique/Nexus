@@ -1,6 +1,13 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -48,8 +55,18 @@ interface Comment {
   updatedAt: Date;
 }
 
-export function CommentsSection({ articleId }: { articleId: string }) {
+function CommentsSectionComponent(
+  { articleId }: { articleId: string },
+  ref: React.Ref<{ focusInput: () => void }>,
+) {
   const user = useContext(UserContext)?.user;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focusInput: () => {
+      textareaRef.current?.focus();
+    },
+  }));
   const router = useRouter();
   const [comments, setComments] = useState<Comment[]>([]);
   const {
@@ -95,14 +112,14 @@ export function CommentsSection({ articleId }: { articleId: string }) {
   };
 
   return (
-    <section className="mt-12 pt-8 text-custom-text-primary">
-      <div className="mb-8 w-full max-w-3xl border-b-[0.01rem] border-neutral-400"></div>
+    <section className="mt-1 pt-8 text-custom-text-primary">
       <h2 className="mb-6 text-2xl font-bold">Comments</h2>
       <Card className="mb-10 border-0 bg-custom-background shadow-none sm:border sm:shadow-sm">
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Textarea
               {...register("content")}
+              ref={textareaRef}
               placeholder="Add a comment..."
               className="mb-1 resize-none bg-custom-background p-3 shadow-none focus-visible:ring-1"
               rows={3}
@@ -234,3 +251,5 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
     </section>
   );
 };
+
+export const CommentsSection = forwardRef(CommentsSectionComponent);

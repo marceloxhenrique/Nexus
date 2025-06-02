@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { api } from "@/utils/api";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { ArticleWithAuthor } from "@/lib/types";
@@ -12,6 +12,7 @@ import Loading from "./loading";
 import { toast } from "sonner";
 import { UserContext } from "@/contexts/UserContext";
 import { CommentsSection } from "@/components/CommentsSection";
+import { Button } from "@/components/ui/button";
 
 // TODO: Sanitize HTML content
 // import DOMPurify from "dompurify";
@@ -21,6 +22,7 @@ function ArticlePage() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { articleslug } = useParams<{ articleslug: string }>();
   const [article, setArticle] = useState<ArticleWithAuthor>();
+  const commentSectionRef = useRef<{ focusInput: () => void }>(null);
   const user = useContext(UserContext)?.user;
   const router = useRouter();
 
@@ -77,7 +79,7 @@ function ArticlePage() {
               src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
               alt={"Author avatar"}
             />
-            <AvatarFallback>
+            <AvatarFallback className="flex w-full items-center justify-center">
               {article.author.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Link>
@@ -109,7 +111,7 @@ function ArticlePage() {
               <Heart
                 className={`h-4 w-4 fill-red-500 text-red-500 hover:fill-red-400 hover:text-red-400`}
               />
-              {article.articleLikes.length}
+              {article.likes}
             </button>
           ) : (
             <button
@@ -117,7 +119,7 @@ function ArticlePage() {
               className="flex cursor-pointer items-center gap-1"
             >
               <Heart className={`h-4 w-4 hover:text-red-500`} />
-              {article.articleLikes.length}
+              {article.likes}
             </button>
           )}
         </span>
@@ -153,7 +155,41 @@ function ArticlePage() {
           </Badge>
         ))}
       </section>
-      <CommentsSection articleId={article?.id}></CommentsSection>
+      <div className="my-16 w-full max-w-3xl border-b-[0.01rem] border-neutral-400"></div>
+      <div className="flex flex-wrap items-center gap-4 text-sm text-custom-text-light">
+        {article.articleLikes.find((like) => like.userSlug === user?.slug) ? (
+          <Button
+            onClick={removeLike}
+            variant="outline"
+            className="flex items-center gap-2 border-neutral-400"
+          >
+            <Heart className="mr-2 h-4 w-4 fill-red-500 text-red-500 hover:fill-red-400 hover:text-red-400" />
+            Like ({article.likes})
+          </Button>
+        ) : (
+          <Button
+            onClick={addLike}
+            variant="outline"
+            className="group flex items-center gap-2 border-neutral-400"
+          >
+            <Heart className="mr-2 h-4 w-4 group-hover:text-red-500" />
+            Like ({article.likes})
+          </Button>
+        )}
+
+        <Button
+          onClick={() => commentSectionRef.current?.focusInput()}
+          variant="outline"
+          className="flex items-center gap-2 border-neutral-400"
+        >
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Comment ({article.commentsCount})
+        </Button>
+      </div>
+      <CommentsSection
+        articleId={article?.id}
+        ref={commentSectionRef}
+      ></CommentsSection>
     </main>
   );
 }
