@@ -8,6 +8,7 @@ import { getUserById } from "../../services/userService";
 import { Article, User } from "@prisma/client";
 import { getSession } from "@/utils/session";
 import { generatePreSignedUrl } from "@/utils/s3Service";
+import { sanitizeInput } from "@/utils/sanitize";
 
 export async function GET(
   req: NextRequest,
@@ -43,11 +44,16 @@ export async function PUT(
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-    // !!! Check if this article belongs to the owner of this session
     const article = await getArticleById(articleId);
+    if (article?.authorId !== user?.id)
+      return NextResponse.json("You are not the author of this article", {
+        status: 403,
+      });
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
     const articleInput = await req.json();
+    const sanitizecContent = sanitizeInput(articleInput.content);
+    articleInput.content = sanitizecContent;
     if (!articleInput.image) {
       await updateArticle(articleInput);
       return NextResponse.json(
@@ -83,13 +89,16 @@ export async function DELETE(
   if (!articleId)
     return NextResponse.json("Invalid Article ID", { status: 400 });
 
-  const { errorResponse } = await getSession(req.headers);
+  const { session, errorResponse } = await getSession(req.headers);
   if (errorResponse) return errorResponse;
   try {
     const article: Article | null = await getArticleById(articleId);
     if (!article)
       return NextResponse.json("Article not found", { status: 404 });
-    // !!! Check if this article belongs to the owner of this session
+    if (article?.authorId !== session.session.userId)
+      return NextResponse.json("You are not the author of this article", {
+        status: 403,
+      });
     await deleteArticle(article);
     return NextResponse.json("Article Successfully deleted", { status: 200 });
   } catch (error) {

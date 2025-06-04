@@ -44,7 +44,13 @@ export async function PUT(
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     const updateData = await req.json();
-    // console.log("User", updateData);
+    if (!updateData.avatar || !updateData.fileType) {
+      await updateUser(session.session.userId, updateData);
+      return NextResponse.json(
+        { message: "User successfully updated" },
+        { status: 200 },
+      );
+    }
     const fileKey = `avatar/${Date.now()}-${user.slug}-${updateData.avatar}`
       .replace(/\s+/g, "-")
       .toLowerCase();

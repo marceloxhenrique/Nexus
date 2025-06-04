@@ -14,10 +14,6 @@ import { UserContext } from "@/contexts/UserContext";
 import { CommentsSection } from "@/components/CommentsSection";
 import { Button } from "@/components/ui/button";
 
-// TODO: Sanitize HTML content
-// import DOMPurify from "dompurify";
-// const safeHtml = DOMPurify.sanitize(userSubmittedHtml);
-
 function ArticlePage() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { articleslug } = useParams<{ articleslug: string }>();

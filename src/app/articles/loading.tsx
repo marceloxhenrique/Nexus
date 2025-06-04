@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <main className="my-auto flex w-full max-w-[68rem] px-4">
+    <main className="my-auto flex w-full max-w-[68rem] lg:px-4">
       <section className="mr-10 flex-1">
         <h1 className="mt-18 font-secondary text-4xl font-bold tracking-tight text-custom-text-primary">
           Explore Articles

@@ -9,6 +9,7 @@ import { getUserById } from "../services/userService";
 import { User } from "@prisma/client";
 import { getSession } from "@/utils/session";
 import { generatePreSignedUrl } from "@/utils/s3Service";
+import { sanitizeInput } from "@/utils/sanitize";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -41,7 +42,8 @@ export async function POST(req: NextRequest) {
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-
+    const sanitizecContent = sanitizeInput(article.content);
+    article.content = sanitizecContent;
     if (!article.image) {
       await createArticle(article, user);
 
