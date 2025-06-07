@@ -22,6 +22,18 @@ export async function getFollowers(followingSlug: string) {
   return followers;
 }
 
+export async function getFollowing(followerSlug: string) {
+  const following = await db.follow.findMany({
+    where: {
+      followerSlug,
+    },
+    include: {
+      following: true,
+    },
+  });
+  return following;
+}
+
 export async function deleteFollower(
   followerSlug: string,
   followingSlug: string,

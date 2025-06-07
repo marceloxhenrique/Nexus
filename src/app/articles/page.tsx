@@ -37,7 +37,7 @@ function Articles() {
       <div className="hidden max-w-3xl border-l-[0.01rem] border-neutral-400 xl:block dark:border-zinc-600"></div>
       <div className="max-w-[26em] bg-blue-500">
         <div className="fixed">
-          {articles && <MostRead articles={articles}></MostRead>}
+          {articles && <MostRead articles={articles.slice(0, 3)}></MostRead>}
           <WhoToFollow></WhoToFollow>
         </div>
       </div>

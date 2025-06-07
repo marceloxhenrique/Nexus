@@ -23,6 +23,7 @@ export default function PublicProfilePage() {
   const [profileUser, setProfileUser] = useState<User | undefined>();
   const [isFollower, setIsFollower] = useState<boolean>(false);
   const [followers, setFollowers] = useState<FollowerWithUser[]>([]);
+  const [following, setFollowing] = useState<any[]>([]);
   const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
   const [notFoundUser, setNotFoundUser] = useState(false);
   const { username } = useParams<{ username: string }>();
@@ -33,8 +34,9 @@ export default function PublicProfilePage() {
     const getFollowers = async () => {
       try {
         const response = await api.get(`/follow?slug=${userSlug}`);
-        setFollowers(response.data);
-        isFollowing(response.data);
+        setFollowers(response.data.followers);
+        isFollowing(response.data.followers);
+        setFollowing(response.data.following);
       } catch (error) {
         console.error("Error while retriving followers: ", error);
       }
@@ -104,7 +106,6 @@ export default function PublicProfilePage() {
       console.error("Error while unfollowing user: ", error);
     }
   };
-
   return (
     <main className="flex w-full grow bg-custom-background">
       <section className="mx-auto flex w-full max-w-[80rem] grow flex-col justify-between gap-4 px-0 py-10 lg:flex-row-reverse">
@@ -149,7 +150,7 @@ export default function PublicProfilePage() {
                     <p className="ml-1 text-custom-text-light">Followers</p>
                   </span>
                   <span className="flex">
-                    {followers.length}
+                    {following.length}
                     <p className="ml-1 text-custom-text-light">Following</p>
                   </span>
                 </div>

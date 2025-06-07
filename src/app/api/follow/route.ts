@@ -1,6 +1,10 @@
 import { getSession } from "@/utils/session";
 import { NextRequest, NextResponse } from "next/server";
-import { addFollower, getFollowers } from "../services/followService";
+import {
+  addFollower,
+  getFollowers,
+  getFollowing,
+} from "../services/followService";
 import { getUserById } from "../services/userService";
 import { User } from "@prisma/client";
 
@@ -12,7 +16,8 @@ export async function GET(req: NextRequest) {
   }
   try {
     const followers = await getFollowers(userSlug);
-    return NextResponse.json(followers, { status: 200 });
+    const following = await getFollowing(userSlug);
+    return NextResponse.json({ followers, following }, { status: 200 });
   } catch (error) {
     console.error("Error while getting followers: ", error);
     return NextResponse.json(
@@ -30,6 +35,11 @@ export async function POST(req: NextRequest) {
     const user: User | null = await getUserById(session.session.userId);
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (user.slug === followingSlug)
+      return NextResponse.json(
+        { error: "You cannot follow yourself" },
+        { status: 400 },
+      );
     await addFollower(user?.slug, followingSlug);
     return NextResponse.json("User followed successfully", { status: 200 });
   } catch (error) {
