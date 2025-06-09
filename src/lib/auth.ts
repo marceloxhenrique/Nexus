@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { db } from "./db";
+import { sendEmail } from "@/utils/sendEmail";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -9,7 +10,34 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
   },
+
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      console.log(
+        `sendVerificationEmail: user : ${user.email}, url : ${url}, token : ${token}`,
+      );
+      await sendEmail({
+        to: user.email,
+        subject: "Welcome to Nexus – Confirm Your Email",
+        text: `
+        Hi ${user.name || "there"},
+
+        Thanks for signing up to Nexus!
+        To complete your registration and start exploring great content, please confirm your email address by clicking the link below:
+
+        ${url}
+
+        If you didn’t sign up for Nexus, feel free to ignore this message.
+
+        The Nexus Team`,
+      });
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+  },
+
   socialProviders: {
     google: {
       prompt: "select_account",

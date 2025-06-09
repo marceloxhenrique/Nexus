@@ -4,7 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ArticleCard from "@/components/ArticleCard";
 import { api } from "@/utils/api";
 import { useContext, useEffect, useState } from "react";
-import { ArticleWithAuthor, FollowerWithUser } from "@/lib/types";
+import {
+  ArticleWithAuthor,
+  FollowerWithUser,
+  FollowingWithUser,
+} from "@/lib/types";
 import { User, Article } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { UserContext } from "@/contexts/UserContext";
@@ -17,13 +21,14 @@ import {
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Followers from "./followers";
+import Following from "./following";
 
 export default function PublicProfilePage() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const [profileUser, setProfileUser] = useState<User | undefined>();
   const [isFollower, setIsFollower] = useState<boolean>(false);
   const [followers, setFollowers] = useState<FollowerWithUser[]>([]);
-  const [following, setFollowing] = useState<any[]>([]);
+  const [following, setFollowing] = useState<FollowingWithUser[]>([]);
   const [articles, setArticles] = useState<ArticleWithAuthor[]>([]);
   const [notFoundUser, setNotFoundUser] = useState(false);
   const { username } = useParams<{ username: string }>();
@@ -121,7 +126,7 @@ export default function PublicProfilePage() {
                   }
                   alt={profileUser?.name}
                 />
-                <AvatarFallback className="text-4xl">
+                <AvatarFallback className="text-2xl text-custom-primary">
                   {profileUser?.name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -209,6 +214,7 @@ export default function PublicProfilePage() {
               )}
             </section>
             <Followers followers={followers}></Followers>
+            <Following following={following}></Following>
           </div>
         </div>
         <section className="flex flex-col gap-4">

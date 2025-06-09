@@ -64,7 +64,10 @@ export default function SignupForm() {
         onSuccess: () => {
           reset();
           setDisableFields(false);
-          route.push("/articles");
+          toast.success(
+            "Signup successful! Please verify your email before logging in.",
+          );
+          route.push("/sign-in");
         },
         onError: () => {
           toast.error("Something went wrong. Please check your credentials.");
@@ -86,7 +89,10 @@ export default function SignupForm() {
         onSuccess: () => {
           reset();
           setDisableFields(false);
-          route.push("/articles");
+          toast.success(
+            "Signup successful! Please verify your email before logging in.",
+          );
+          route.push("/sign-in");
         },
         onError: () => {
           toast.error("Something went wrong. Please check your credentials.");
@@ -108,7 +114,10 @@ export default function SignupForm() {
         onSuccess: () => {
           reset();
           setDisableFields(false);
-          route.push("/articles");
+          toast.success(
+            "Signup successful! Please verify your email before logging in.",
+          );
+          route.push("/sign-in");
         },
         onError: () => {
           toast.error("Something went wrong. Please check your credentials.");
