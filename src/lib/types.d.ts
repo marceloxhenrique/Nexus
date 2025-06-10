@@ -27,3 +27,12 @@ const followerWithUser = Prisma.validator<Prisma.FollowDefaultArgs>()({
 });
 
 export type FollowerWithUser = Prisma.FollowGetPayload<typeof followerWithUser>;
+
+const followingWithUser = Prisma.validator<Prisma.FollowDefaultArgs>()({
+  include: {
+    following: true,
+  },
+});
+export type FollowingWithUser = Prisma.FollowGetPayload<
+  typeof followingWithUser
+>;

@@ -93,7 +93,8 @@ function CommentsSectionComponent(
     getComments();
   }, []);
 
-  const onSubmit = async (data: CommentFormValues) => {
+  const addComment = async (data: CommentFormValues) => {
+    console.log("data", data);
     if (!user) {
       router.push("/sign-up");
       return;
@@ -116,10 +117,14 @@ function CommentsSectionComponent(
       <h2 className="mb-6 text-2xl font-bold">Comments</h2>
       <Card className="mb-10 border-0 bg-custom-background shadow-none sm:border sm:shadow-sm">
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(addComment)}>
             <Textarea
               {...register("content")}
-              ref={textareaRef}
+              // ref={textareaRef}
+              ref={(el) => {
+                register("content").ref(el);
+                textareaRef.current = el;
+              }}
               placeholder="Add a comment..."
               className="mb-1 resize-none bg-custom-background p-3 shadow-none focus-visible:ring-1"
               rows={3}

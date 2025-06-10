@@ -33,7 +33,7 @@ export default function Navbar() {
   return (
     <div
       className={`fixed z-50 w-full transition-transform duration-300 ${pathname !== "/" ? "bg-custom-background" : "bg-custom-background-home"} ${
-        visible ? "translate-y-0" : "-translate-y-full"
+        visible ? "lg:translate-y-0" : "lg:-translate-y-full"
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-[80rem] flex-row items-center justify-between px-3 transition-colors duration-500">
@@ -45,10 +45,7 @@ export default function Navbar() {
         <div className="flex flex-row items-center gap-4">
           {session && <UserDropdownMenu user={user?.user}></UserDropdownMenu>}
           {!session && (
-            <Button
-              variant={"outline"}
-              className="h-8 rounded-sm border-[0.09rem] border-custom-primary bg-transparent px-3 text-xs text-custom-primary md:h-9 md:text-base dark:border-white"
-            >
+            <Button variant={"default"} className="">
               <Link href={"/sign-in"}>Sign in</Link>
             </Button>
           )}

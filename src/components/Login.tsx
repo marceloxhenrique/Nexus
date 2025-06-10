@@ -65,8 +65,12 @@ export default function LoginForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: () => {
-          toast.error("Something went wrong. Please check your credentials.");
+        onError: (ctx) => {
+          if (ctx.error.status === 403) {
+            toast.error("Please verify your email address before logging in.");
+          } else {
+            toast.error("Something went wrong. Please check your credentials.");
+          }
           setDisableFields(false);
         },
       },
@@ -87,8 +91,12 @@ export default function LoginForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: () => {
-          toast.error("Something went wrong. Please check your credentials.");
+        onError: (ctx) => {
+          if (ctx.error.status === 403) {
+            toast.error("Please verify your email address before logging in.");
+          } else {
+            toast.error("Something went wrong. Please check your credentials.");
+          }
           setDisableFields(false);
         },
       },
@@ -109,8 +117,12 @@ export default function LoginForm() {
           setDisableFields(false);
           route.push("/articles");
         },
-        onError: () => {
-          toast.error("Something went wrong. Please check your credentials.");
+        onError: (ctx) => {
+          if (ctx.error.status === 403) {
+            toast.error("Please verify your email address before logging in.");
+          } else {
+            toast.error("Something went wrong. Please check your credentials.");
+          }
           setDisableFields(false);
         },
       },

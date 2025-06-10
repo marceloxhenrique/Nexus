@@ -227,7 +227,7 @@ export function NewArticleEditor() {
             </span>
           </section>
         </CardContent>
-        <CardFooter className="flex justify-between px-6 py-4">
+        <CardFooter className="flex flex-wrap justify-between gap-3 py-4 lg:px-6">
           <Button
             type="button"
             variant="outline"
@@ -238,7 +238,7 @@ export function NewArticleEditor() {
             Cancel
           </Button>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button
               type="submit"
               variant="outline"

@@ -16,7 +16,7 @@ export default function WhoToFollow() {
   const getUsers = async () => {
     try {
       const res = await api.get("who-to-follow");
-      setUsers(res.data);
+      setUsers(res.data.slice(0, 3));
     } catch (error) {
       console.error("Failed to fetch users:", error);
     }

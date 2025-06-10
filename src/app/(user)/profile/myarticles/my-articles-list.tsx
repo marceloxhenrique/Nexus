@@ -75,7 +75,7 @@ export function MyArticlesList({
           <p className="text-custom-text-light">
             You haven't written any articles yet.
           </p>
-          <Link href="/new-article">
+          <Link href="/profile/new-article">
             <Button className="mt-4 bg-green-700 hover:bg-green-600">
               Write your first article
             </Button>

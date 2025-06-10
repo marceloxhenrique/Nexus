@@ -29,7 +29,7 @@ export default function Contact() {
               marcelodasilva.dev@gmail.com
             </a>
           </li>
-          <li>
+          {/* <li>
             <strong>Twitter: </strong>
             <a
               href="https://twitter.com"
@@ -38,8 +38,8 @@ export default function Contact() {
             >
               @Nexus
             </a>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <strong>LinkedIn: </strong>
             <a
               href="https://linkedin.com"
@@ -48,7 +48,7 @@ export default function Contact() {
             >
               Nexus on LinkedIn
             </a>
-          </li>
+          </li> */}
         </ul>
       </section>
       <section className="mt-8">
