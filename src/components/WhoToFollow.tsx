@@ -26,7 +26,7 @@ export default function WhoToFollow() {
   }, []);
 
   return (
-    <div className="bg mt-18 hidden w-full flex-wrap pl-10 xl:block">
+    <div className="bg mt-18 hidden w-full flex-wrap pl-10 lg:block">
       <h2 className="font-secondary text-2xl font-bold text-custom-text-primary">
         Who to follow
       </h2>

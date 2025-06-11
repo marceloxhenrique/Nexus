@@ -19,7 +19,7 @@ function Articles() {
   if (!articles) return <Loading></Loading>;
   return (
     <main className="my-auto flex">
-      <section className="lg:mr-10">
+      <section className="flex-3 lg:mr-10">
         <h1 className="mt-18 font-secondary text-4xl font-bold tracking-tight text-custom-text-primary">
           Explore Articles
         </h1>
@@ -34,8 +34,8 @@ function Articles() {
             ))}
         </section>
       </section>
-      <div className="hidden max-w-3xl border-l-[0.01rem] border-neutral-400 xl:block dark:border-zinc-600"></div>
-      <div className="max-w-[26em] bg-blue-500">
+      <div className="hidden max-w-3xl border-l-[0.01rem] border-neutral-400 lg:block dark:border-zinc-600"></div>
+      <div className="hidden max-w-[26em] flex-1 lg:block">
         <div className="fixed">
           {articles.length > 0 && (
             <MostRead articles={articles.slice(0, 3)}></MostRead>
