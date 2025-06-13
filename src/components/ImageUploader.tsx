@@ -80,6 +80,8 @@ export function ImageUploader({
       {imagePreview ? (
         <div className="relative h-full w-full">
           <Image
+            width={300}
+            height={300}
             src={
               imagePreview.startsWith("uploads")
                 ? NEXT_PUBLIC_AWS_URL + imagePreview

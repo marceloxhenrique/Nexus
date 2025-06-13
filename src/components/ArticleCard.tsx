@@ -11,9 +11,9 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
   return (
     <Link
       href={`/${"@" + article.authorSlug}/${article.slug}`}
-      className="block max-w-3xl"
+      className="block"
     >
-      <section className="flex max-w-3xl flex-col gap-6 py-6 md:flex-row">
+      <section className="flex max-w-4xl flex-col gap-6 py-6 md:flex-row">
         <div className="order-2 flex-1 md:order-1">
           <div className="mb-3 flex items-center gap-3">
             <Avatar className="flex h-8 w-8 items-center justify-center bg-zinc-200 text-sm">

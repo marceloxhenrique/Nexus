@@ -113,8 +113,8 @@ export default function PublicProfilePage() {
   };
   return (
     <main className="flex w-full grow bg-custom-background">
-      <section className="mx-auto flex w-full max-w-[80rem] grow flex-col justify-between gap-4 px-0 py-10 lg:flex-row-reverse">
-        <div className="mb-12 flex flex-col gap-2 lg:w-full lg:max-w-[24rem] lg:flex-col">
+      <section className="mx-auto flex w-full max-w-[80rem] grow flex-col justify-between gap-12 px-0 py-10 lg:flex-row-reverse">
+        <aside className="flex flex-col gap-2 lg:w-full lg:max-w-[24rem] lg:flex-col">
           <div className="lg:fixed">
             <div className="flex items-center gap-2">
               <Avatar className="size-15 border-[0.01rem] border-neutral-800 dark:border-white">
@@ -159,42 +159,58 @@ export default function PublicProfilePage() {
                     <p className="ml-1 text-custom-text-light">Following</p>
                   </span>
                 </div>
-                {isFollower ? (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button className="w-full max-w-sm" variant={"outline"}>
-                        Following
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-64 space-y-4 bg-custom-background p-4">
-                      <div className="text-sm">
-                        Are you sure you want to unfollow
-                        <strong> {profileUser?.name}</strong>?
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <PopoverClose asChild className="flex-1">
-                          <Button variant="outline">Cancel</Button>
-                        </PopoverClose>
-                        <PopoverClose asChild className="flex-1">
-                          <Button
-                            variant="default"
-                            className="flex-1"
-                            onClick={unfollow}
-                          >
-                            Unfollow
-                          </Button>
-                        </PopoverClose>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                ) : (
+                {decodeURIComponent(username).slice(1) === user?.slug ? (
                   <Button
-                    variant={"default"}
-                    onClick={addFollower}
                     className="max-w-sm"
+                    onClick={() => {
+                      router.push("/profile");
+                    }}
                   >
-                    Follow
+                    Edit Profile
                   </Button>
+                ) : (
+                  <>
+                    {isFollower ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            className="w-full max-w-sm"
+                            variant={"outline"}
+                          >
+                            Following
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 space-y-4 bg-custom-background p-4">
+                          <div className="text-sm">
+                            Are you sure you want to unfollow
+                            <strong> {profileUser?.name}</strong>?
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <PopoverClose asChild className="flex-1">
+                              <Button variant="outline">Cancel</Button>
+                            </PopoverClose>
+                            <PopoverClose asChild className="flex-1">
+                              <Button
+                                variant="default"
+                                className="flex-1"
+                                onClick={unfollow}
+                              >
+                                Unfollow
+                              </Button>
+                            </PopoverClose>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    ) : (
+                      <Button
+                        variant={"default"}
+                        onClick={addFollower}
+                        className="max-w-sm"
+                      >
+                        Follow
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
               {profileUser?.socials && profileUser.socials.length > 0 && (
@@ -216,7 +232,7 @@ export default function PublicProfilePage() {
             <Followers followers={followers}></Followers>
             <Following following={following}></Following>
           </div>
-        </div>
+        </aside>
         <section className="flex flex-col gap-4">
           <h1 className="hidden text-3xl font-bold text-custom-text-primary lg:block">
             {profileUser?.name.charAt(0).toUpperCase()}
