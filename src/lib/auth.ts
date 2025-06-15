@@ -14,7 +14,7 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, url, token }) => {
       console.log(
         `sendVerificationEmail: user : ${user.email}, url : ${url}, token : ${token}`,
       );

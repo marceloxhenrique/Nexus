@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FollowerWithUser, FollowingWithUser } from "@/lib/types";
+import { FollowingWithUser } from "@/lib/types";
 
 export default function Following({
   following,

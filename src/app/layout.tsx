@@ -1,9 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import Footer from "@/components/Footer";
-import { UserProvider } from "@/contexts/UserContext";
 import { Toaster } from "sonner";
+
+import { Providers } from "@/utils/providers";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
@@ -29,17 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="analaised">
-        <ThemeProvider>
-          <UserProvider>
-            <section className="flex min-h-screen flex-col bg-custom-background-home">
-              <Navbar></Navbar>
-              <span className="h-16 bg-custom-background"></span>
-              {children}
-              <Toaster position="top-center" richColors={true} />
-              <Footer></Footer>
-            </section>
-          </UserProvider>
-        </ThemeProvider>
+        <Providers>
+          <section className="flex min-h-screen flex-col bg-custom-background-home">
+            <Navbar></Navbar>
+            <span className="h-16 bg-custom-background"></span>
+            {children}
+            <Toaster position="top-center" richColors={true} />
+            <Footer></Footer>
+          </section>
+        </Providers>
       </body>
     </html>
   );

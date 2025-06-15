@@ -1,9 +1,7 @@
 "use client";
-
 import {
   forwardRef,
   useContext,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -11,7 +9,6 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const commentSchema = z.object({
   content: z.string().min(1, { message: "Comment cannot be empty" }),
 });
@@ -61,14 +59,14 @@ function CommentsSectionComponent(
 ) {
   const user = useContext(UserContext)?.user;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+  const queryClient = useQueryClient();
   useImperativeHandle(ref, () => ({
     focusInput: () => {
       textareaRef.current?.focus();
     },
   }));
   const router = useRouter();
-  const [comments, setComments] = useState<Comment[]>([]);
+
   const {
     register,
     handleSubmit,
@@ -81,20 +79,31 @@ function CommentsSectionComponent(
     },
   });
 
-  useEffect(() => {
-    const getComments = async () => {
-      try {
-        const response = await api.get(`/comments?articleId=${articleId}`);
-        setComments(response.data);
-      } catch (error) {
-        console.error("Error getting comments: ", error);
-      }
-    };
-    getComments();
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["comments", articleId],
+    queryFn: async (): Promise<Comment[]> => {
+      const response = await api.get(`/comments?articleId=${articleId}`);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: async (newComment: { content: string; articleId: string }) => {
+      await api.post("/comments", newComment);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", articleId] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      reset();
+    },
+    onError: (error) => {
+      console.log("Error commenting article :", error);
+      toast.error("Something went wrong. Please try again");
+    },
+  });
 
   const addComment = async (data: CommentFormValues) => {
-    console.log("data", data);
     if (!user) {
       router.push("/sign-up");
       return;
@@ -103,13 +112,7 @@ function CommentsSectionComponent(
       content: data.content,
       articleId: articleId,
     };
-    try {
-      await api.post("/comments", newComment);
-      reset();
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error("Error liking article", error);
-    }
+    addCommentMutation.mutate(newComment);
   };
 
   return (
@@ -120,7 +123,6 @@ function CommentsSectionComponent(
           <form onSubmit={handleSubmit(addComment)}>
             <Textarea
               {...register("content")}
-              // ref={textareaRef}
               ref={(el) => {
                 register("content").ref(el);
                 textareaRef.current = el;
@@ -142,10 +144,10 @@ function CommentsSectionComponent(
           </form>
         </CardContent>
       </Card>
-      {comments?.map((comment) => (
+      {data?.map((comment: Comment) => (
         <CommentItem key={comment.id} comment={comment} />
       ))}
-      {comments?.length === 0 && (
+      {data?.length === 0 && (
         <div className="py-12 text-center text-custom-text-light">
           <h3 className="mb-2 text-lg font-medium">No Comments yet</h3>
           <p>Be the first to share your thoughts!</p>
@@ -157,22 +159,25 @@ function CommentsSectionComponent(
 
 const CommentItem = ({ comment }: { comment: Comment }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const user = useContext(UserContext)?.user;
+  const queryClient = useQueryClient();
 
-  const handleDeleteComment = async () => {
-    setIsLoading(true);
-    try {
+  const deleteCommentMutation = useMutation({
+    mutationFn: async () => {
       await api.delete(`/comments/${comment.id}`);
-      toast.success("Comment deleted successfully");
-    } catch (error) {
-      console.error("Error deleting comment: ", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
       setDeleteDialogOpen(false);
-    }
-  };
+    },
+    onError: (error) => {
+      console.error("Error while deleting comment: ", error);
+      toast.error("Something went wrong. Please try again.");
+      setDeleteDialogOpen(false);
+    },
+  });
+
   return (
     <section className="mb-6 flex flex-col gap-3 border-b-[0.01rem] border-neutral-400 pb-4">
       <div className="flex justify-between">
@@ -232,17 +237,19 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
                 variant="outline"
                 onClick={() => setDeleteDialogOpen(false)}
                 className="border-[0.01rem] text-custom-text-primary"
-                disabled={isLoading}
+                disabled={deleteCommentMutation.isPending}
               >
                 Cancel
               </Button>
               <Button
                 variant="destructive"
-                onClick={handleDeleteComment}
-                disabled={isLoading}
+                onClick={() => {
+                  deleteCommentMutation.mutate();
+                }}
+                disabled={deleteCommentMutation.isPending}
                 className="w-full sm:w-auto"
               >
-                {isLoading ? (
+                {deleteCommentMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                 ) : (
                   "Delete"
