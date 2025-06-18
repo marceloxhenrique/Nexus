@@ -40,7 +40,7 @@ const TextEditor = ({ value, onChange }: TextEditorProps) => {
     if (value !== quill?.root.innerHTML) {
       quill?.clipboard.dangerouslyPasteHTML(value);
     }
-  }, [value]);
+  }, [value, quill]);
 
   return (
     <div className="flex w-full flex-wrap rounded-md">

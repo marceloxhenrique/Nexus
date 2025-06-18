@@ -17,17 +17,19 @@ const ArticleCard = ({ article }: { article: ArticleWithAuthor }) => {
         <div className="order-2 flex-1 md:order-1">
           <div className="mb-3 flex items-center gap-3">
             <Avatar className="flex h-8 w-8 items-center justify-center bg-zinc-200 text-sm">
-              <AvatarImage
-                src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
-                alt="User avatar"
-              />
+              {article.author?.avatar && (
+                <AvatarImage
+                  src={NEXT_PUBLIC_AWS_URL + article.author.avatar}
+                  alt="User avatar"
+                />
+              )}
               <AvatarFallback>
-                {article.author.name?.slice(0, 2).toUpperCase()}
+                {article.author?.name?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <span className="font-medium text-custom-text-primary">
-                {article.author.name || "Anonymous"}
+                {article.author?.name || "Anonymous"}
               </span>
               <span className="text-custom-text-light">•</span>
               <span className="text-custom-text-light">

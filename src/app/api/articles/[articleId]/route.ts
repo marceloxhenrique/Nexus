@@ -71,7 +71,7 @@ export async function PUT(
     );
     await updateArticle(article, fileKey);
 
-    return NextResponse.json(uploadUrl, { status: 200 });
+    return NextResponse.json({ uploadUrl: uploadUrl }, { status: 200 });
   } catch (error) {
     console.error("Error while updating article: ", error);
     return NextResponse.json(

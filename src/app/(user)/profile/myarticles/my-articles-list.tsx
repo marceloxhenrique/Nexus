@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Edit, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Image from "next/image";
 import {
   Dialog,
@@ -16,35 +16,50 @@ import {
 } from "@/components/ui/dialog";
 import { api } from "@/utils/api";
 import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UserContext } from "@/contexts/UserContext";
 
-export function MyArticlesList({
-  articles,
-}: {
-  articles: Article[] | undefined;
-}) {
+export function MyArticlesList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
+  const user = useContext(UserContext)?.user;
+  const queryClient = useQueryClient();
+
+  const { data } = useQuery({
+    queryKey: ["articles"],
+    queryFn: async (): Promise<Article[]> => {
+      const response = await api.get(`/users/${user?.id}`);
+      return response.data.articles;
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!user,
+  });
 
   const handleDeleteClick = (article: Article) => {
     setArticleToDelete(article);
     setDeleteDialogOpen(true);
   };
 
+  const deleteArticleMutation = useMutation({
+    mutationFn: async () => {
+      const response = await api.delete(`/articles/${articleToDelete?.id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      setDeleteDialogOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting the article: ", error);
+      toast.error("Something went wrong. Please try again.");
+      setDeleteDialogOpen(false);
+    },
+  });
+
   const handleDeleteArticle = async () => {
     if (!articleToDelete?.id) return;
-    setIsLoading(true);
-    try {
-      await api.delete(`/articles/${articleToDelete?.id}`);
-      toast.success("Article deleted");
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error("Error while deleting article: ", error);
-    } finally {
-      setIsLoading(false);
-      setDeleteDialogOpen(false);
-    }
+    deleteArticleMutation.mutate();
   };
 
   const getStatusBadge = (article: Article) => {
@@ -53,7 +68,6 @@ export function MyArticlesList({
         <Badge className="bg-green-600 hover:bg-green-700">Published</Badge>
       );
     } else if (article.id) {
-      // If it has an ID but not published, it's unpublished
       return (
         <Badge variant="outline" className="border-red-500 text-red-500">
           Unpublished
@@ -70,7 +84,7 @@ export function MyArticlesList({
 
   return (
     <div className="space-y-4">
-      {!articles || articles.length === 0 ? (
+      {!data || data.length === 0 ? (
         <div className="rounded-md bg-muted p-8 text-center">
           <p className="text-custom-text-light">
             You haven't written any articles yet.
@@ -82,7 +96,7 @@ export function MyArticlesList({
           </Link>
         </div>
       ) : (
-        articles.map((article) => (
+        data.map((article) => (
           <div
             key={article.id}
             className="flex flex-col gap-6 border-b border-gray-100 py-6 last:border-0 md:flex-row"
@@ -135,7 +149,7 @@ export function MyArticlesList({
                       variant="ghost"
                       size="sm"
                       className="h-8 px-2"
-                      disabled={isLoading}
+                      disabled={deleteArticleMutation.isPending}
                     >
                       <Edit className="h-4 w-4" />
                       <span className="sr-only md:not-sr-only md:ml-2">
@@ -148,7 +162,7 @@ export function MyArticlesList({
                     size="sm"
                     className="h-8 px-2"
                     onClick={() => handleDeleteClick(article)}
-                    disabled={isLoading}
+                    disabled={deleteArticleMutation.isPending}
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                     <span className="sr-only md:not-sr-only md:ml-2">
@@ -199,17 +213,17 @@ export function MyArticlesList({
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
               className="border-[0.01rem] text-custom-text-primary"
-              disabled={isLoading}
+              disabled={deleteArticleMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteArticle}
-              disabled={isLoading}
+              disabled={deleteArticleMutation.isPending}
               className="w-full sm:w-auto"
             >
-              {isLoading ? (
+              {deleteArticleMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 "Yes, delete article"
