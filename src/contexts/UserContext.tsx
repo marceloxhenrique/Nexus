@@ -3,6 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { UserWithArticles } from "@/lib/types";
 
 import { api } from "@/utils/api";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 type UserType = {
@@ -16,20 +17,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data: session } = authClient.useSession();
   const [user, setUser] = useState<UserWithArticles | undefined>();
 
-  useEffect(() => {
-    if (session?.session?.userId) {
-      const getUser = async () => {
-        try {
-          const response = await api.get(`/users/${session?.session.userId}`);
+  useQuery({
+    queryKey: ["user"],
+    queryFn: async (): Promise<UserWithArticles> => {
+      const response = await api.get(`/users/${session?.session.userId}`);
+      setUser(response.data);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!session,
+  });
 
-          setUser(response.data);
-        } catch (error) {
-          console.error("Error while getting user : ", error);
-        }
-      };
-      getUser();
-    }
-  }, [session]);
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}

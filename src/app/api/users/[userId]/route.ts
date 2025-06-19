@@ -61,7 +61,7 @@ export async function PUT(
     );
     await updateUser(session.session.userId, updateData);
 
-    return NextResponse.json(uploadUrl, { status: 200 });
+    return NextResponse.json({ uploadUrl: uploadUrl }, { status: 200 });
   } catch (error) {
     console.error("Error while trying to update the user", error);
     return NextResponse.json(

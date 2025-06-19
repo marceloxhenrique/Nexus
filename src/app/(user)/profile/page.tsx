@@ -31,6 +31,7 @@ import { UserContext } from "@/contexts/UserContext";
 import { toast } from "sonner";
 import axios from "axios";
 import Image from "next/image";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const profileSchema = z.object({
   name: z.string().min(1, { message: "This field is obligatory" }),
@@ -51,12 +52,12 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileForm() {
   const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
-  const [isLoading, setIsLoading] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const user = useContext(UserContext)?.user;
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -73,29 +74,35 @@ export default function ProfileForm() {
     },
   });
 
-  const onSubmit = async (data: ProfileFormValues) => {
-    setIsLoading(true);
-    try {
+  const updateUserProfileData = async (data: ProfileFormValues) => {
+    updateUserProfileDataMutation.mutate(data);
+  };
+
+  const updateUserProfileDataMutation = useMutation({
+    mutationFn: async (data: ProfileFormValues) => {
       const response = await api.put(`/users/${user?.id}`, {
         ...data,
         avatar: imageFile?.name,
         fileType: imageFile?.type,
       });
-      const uploadUrl = await response.data;
-
-      await axios.put(uploadUrl, imageFile, {
-        headers: {
-          "Content-Type": imageFile?.type,
-        },
-      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.uploadUrl) {
+        axios.put(data.uploadUrl, imageFile, {
+          headers: {
+            "Content-Type": imageFile?.type,
+          },
+        });
+      }
       toast.success("Profile updated");
-    } catch (error) {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+    onError: (error) => {
       console.error("Error while updating profile: ", error);
       toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -144,7 +151,7 @@ export default function ProfileForm() {
 
   return (
     <section className="w-full">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(updateUserProfileData)}>
         <Card className="border-0 shadow-none sm:border-[0.01rem] sm:shadow-md dark:border-none">
           <CardHeader className="py-2">
             <CardTitle className="text-3xl">Profile</CardTitle>
@@ -205,7 +212,7 @@ export default function ProfileForm() {
                     {...register("name")}
                     placeholder="Your name"
                     className="mt-2 mb-0.5"
-                    disabled={isLoading}
+                    disabled={updateUserProfileDataMutation.isPending}
                   />
                   <span className="h-5 text-sm">
                     {errors.name && (
@@ -239,7 +246,7 @@ export default function ProfileForm() {
                   {...register("occupation")}
                   placeholder="Your profession"
                   className="mt-2 mb-0.5"
-                  disabled={isLoading}
+                  disabled={updateUserProfileDataMutation.isPending}
                 />
               </div>
 
@@ -250,7 +257,7 @@ export default function ProfileForm() {
                   {...register("bio")}
                   placeholder="Write a few sentences about yourself"
                   className="mt-2 mb-0.5 min-h-[120px]"
-                  disabled={isLoading}
+                  disabled={updateUserProfileDataMutation.isPending}
                 />
                 <span className="h-5 text-sm">
                   {errors.bio && (
@@ -276,7 +283,7 @@ export default function ProfileForm() {
                           field.onChange([...(field.value || []), ""]);
                         }}
                         className="border-[0.01rem]"
-                        disabled={isLoading}
+                        disabled={updateUserProfileDataMutation.isPending}
                       >
                         <Plus className="mr-2 h-4 w-4" />
                         Add Link
@@ -300,7 +307,7 @@ export default function ProfileForm() {
                               field.onChange(newSocials);
                             }}
                             placeholder="https://twitter.com/yourusername"
-                            disabled={isLoading}
+                            disabled={updateUserProfileDataMutation.isPending}
                           />
                           <Button
                             type="button"
@@ -311,7 +318,10 @@ export default function ProfileForm() {
                               newSocials.splice(index, 1);
                               field.onChange(newSocials);
                             }}
-                            disabled={field.value?.length === 0 || isLoading}
+                            disabled={
+                              field.value?.length === 0 ||
+                              updateUserProfileDataMutation.isPending
+                            }
                           >
                             <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>
@@ -336,16 +346,16 @@ export default function ProfileForm() {
               variant="outline"
               type="button"
               className="border-[0.01rem]"
-              disabled={isLoading}
+              disabled={updateUserProfileDataMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               className="w-24 bg-green-700 hover:bg-green-600"
-              disabled={isLoading}
+              disabled={updateUserProfileDataMutation.isPending}
             >
-              {isLoading ? (
+              {updateUserProfileDataMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 "Save"

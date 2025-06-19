@@ -73,7 +73,7 @@ export default function Editor() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
-
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { data } = useQuery({
     queryKey: ["articles", articleId],
     queryFn: async (): Promise<Article> => {
@@ -81,7 +81,7 @@ export default function Editor() {
       setImagePreview(response.data.image);
       return response.data;
     },
-    staleTime: 5 * 60 * 1000,
+    // staleTime: 5 * 60 * 1000,
     enabled: !!articleId,
   });
 
@@ -422,7 +422,9 @@ export default function Editor() {
                     Cover Image
                   </h3>
                   <Image
-                    src={imagePreview || "/placeholder.svg"}
+                    width={500}
+                    height={300}
+                    src={NEXT_PUBLIC_AWS_URL + imagePreview}
                     alt="Article cover"
                     className="h-32 w-full rounded-md object-cover"
                   />
