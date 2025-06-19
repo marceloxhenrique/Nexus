@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     const { uploadUrl } = await generatePreSignedUrl(fileKey, article.fileType);
     await createArticle(article, user, fileKey);
 
-    return NextResponse.json(uploadUrl, { status: 201 });
+    return NextResponse.json({ uploadUrl: uploadUrl }, { status: 201 });
   } catch (error) {
     console.error("Error while creating new article: ", error);
     return NextResponse.json(

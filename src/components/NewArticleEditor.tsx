@@ -26,6 +26,7 @@ import TextEditor from "./TextEditor";
 import { ImageUploader } from "./ImageUploader";
 import { api } from "@/utils/api";
 import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const articleSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
@@ -36,14 +37,21 @@ const articleSchema = z.object({
 });
 
 type ArticleFormValues = z.infer<typeof articleSchema>;
+type CreateArticlePayload = {
+  tags: string[];
+  published: boolean;
+  title: string;
+  content: string;
+  image?: string;
+  fileType?: string;
+};
 
 export function NewArticleEditor() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -74,50 +82,48 @@ export function NewArticleEditor() {
   };
 
   const createArticle = async (isPublished: boolean) => {
-    setIsLoading(true);
-    try {
-      const data = getValues();
-      const inputUser: {
-        tags: string[];
-        published: boolean;
-        title: string;
-        content: string;
-        image?: string;
-        fileType?: string;
-      } = {
-        ...data,
-        tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
-        published: isPublished,
-      };
-      if (imageFile) {
-        inputUser.image = imageFile.name;
-        inputUser.fileType = imageFile.type;
-      }
-      const response = await api.post("/articles", inputUser);
-      const uploadUrl = await response.data;
-      if (uploadUrl) {
-        axios.put(uploadUrl, imageFile, {
+    const data = getValues();
+    const inputUser: CreateArticlePayload = {
+      ...data,
+      tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
+      published: isPublished,
+    };
+    if (imageFile) {
+      inputUser.image = imageFile.name;
+      inputUser.fileType = imageFile.type;
+    }
+    createArticleMutation.mutateAsync(inputUser);
+  };
+
+  const createArticleMutation = useMutation({
+    mutationFn: async (newArticle: CreateArticlePayload) => {
+      const response = await api.post("/articles", newArticle);
+      return response.data;
+    },
+    onSuccess: (data, newArticle) => {
+      if (data.uploadUrl) {
+        axios.put(data.uploadUrl, imageFile, {
           headers: {
             "Content-Type": imageFile?.type,
           },
         });
       }
-
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
       reset();
-      if (isPublished)
+      if (newArticle.published)
         toast.success("Your article has been published successfully.");
-      if (!isPublished) {
+      if (!newArticle.published) {
         toast.success("Your article has been saved successfully.");
       }
-      router.push("/profile/myarticles");
-    } catch (error) {
-      console.error("Error while creating new article: ", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
       setPublishDialogOpen(false);
-    }
-  };
+      router.push("/profile/myarticles");
+    },
+    onError: (error) => {
+      console.error("Error creating article :", error);
+      toast.error("Something went wrong. Please try again.");
+      setPublishDialogOpen(false);
+    },
+  });
 
   const validateAndOpenPublishDialog = () => {
     if (!watchTitle || watchTitle.length < 5) {
@@ -157,7 +163,7 @@ export function NewArticleEditor() {
               {...register("title")}
               placeholder="Enter your article title"
               className="mt-2 mb-0.5 text-lg"
-              disabled={isLoading}
+              disabled={createArticleMutation.isPending}
             />
             <span className="h-5 text-sm">
               {errors.title && (
@@ -187,7 +193,7 @@ export function NewArticleEditor() {
                 }
               }}
               imagePreview={imagePreview}
-              isLoading={isLoading}
+              isLoading={createArticleMutation.isPending}
             />
           </section>
 
@@ -218,7 +224,7 @@ export function NewArticleEditor() {
               {...register("tags")}
               placeholder="nextjs, react, webdev (comma separated)"
               className="mt-2 mb-0.5"
-              disabled={isLoading}
+              disabled={createArticleMutation.isPending}
             />
             <span className="h-5 text-sm">
               <p className="text-xs text-custom-text-light">
@@ -233,7 +239,7 @@ export function NewArticleEditor() {
             variant="outline"
             onClick={() => router.back()}
             className="border-[0.01rem]"
-            disabled={isLoading}
+            disabled={createArticleMutation.isPending}
           >
             Cancel
           </Button>
@@ -243,9 +249,9 @@ export function NewArticleEditor() {
               type="submit"
               variant="outline"
               className="border-[0.01rem]"
-              disabled={isLoading}
+              disabled={createArticleMutation.isPending}
             >
-              {isLoading ? (
+              {createArticleMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 <Save />
@@ -257,9 +263,9 @@ export function NewArticleEditor() {
               type="button"
               className="bg-green-700 hover:bg-green-600"
               onClick={validateAndOpenPublishDialog}
-              disabled={isLoading}
+              disabled={createArticleMutation.isPending}
             >
-              {isLoading ? (
+              {createArticleMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 <Send />
@@ -299,6 +305,8 @@ export function NewArticleEditor() {
                 </h3>
                 <Image
                   src={imagePreview || "/placeholder.svg"}
+                  width={500}
+                  height={300}
                   alt="Article cover"
                   className="h-32 w-full rounded-md object-cover"
                 />
@@ -326,7 +334,7 @@ export function NewArticleEditor() {
               variant="outline"
               onClick={() => setPublishDialogOpen(false)}
               className="border-[0.01rem]"
-              disabled={isLoading}
+              disabled={createArticleMutation.isPending}
             >
               Cancel
             </Button>
@@ -334,10 +342,10 @@ export function NewArticleEditor() {
               onClick={() => {
                 onPublish(true);
               }}
-              disabled={isLoading}
+              disabled={createArticleMutation.isPending}
               className="bg-green-700 hover:bg-green-600"
             >
-              {isLoading ? (
+              {createArticleMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 "Confirm & Publish"

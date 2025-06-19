@@ -3,11 +3,7 @@ import { MyArticlesList } from "./my-articles-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
-import { UserContext } from "@/contexts/UserContext";
-import { useContext } from "react";
-
 export default function MyArticlesPage() {
-  const user = useContext(UserContext)?.user;
   return (
     <section className="lg:p-6">
       <div className="mb-10 flex items-center justify-between">
@@ -21,7 +17,7 @@ export default function MyArticlesPage() {
           </Button>
         </Link>
       </div>
-      <MyArticlesList articles={user?.articles} />
+      <MyArticlesList />
     </section>
   );
 }

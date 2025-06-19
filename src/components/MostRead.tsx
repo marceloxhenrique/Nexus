@@ -19,10 +19,12 @@ export default function MostRead({
             <Link href={`/articles/${article.slug}`}>
               <span className="flex items-center gap-2 text-sm font-medium text-custom-text-light">
                 <Avatar className="flex h-6 w-6 items-center justify-center bg-zinc-200 text-sm">
-                  <AvatarImage
-                    src={NEXT_PUBLIC_AWS_URL + article.author.avatar!}
-                    alt="User avatar"
-                  />
+                  {article.author.avatar && (
+                    <AvatarImage
+                      src={NEXT_PUBLIC_AWS_URL + article.author.avatar}
+                      alt="User avatar"
+                    />
+                  )}
                   <AvatarFallback>
                     {article.author.name?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>

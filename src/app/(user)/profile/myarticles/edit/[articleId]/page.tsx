@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,7 @@ import TextEditor from "@/components/TextEditor";
 import { Article } from "@prisma/client";
 import axios from "axios";
 import Image from "next/image";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const articleSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
   content: z
@@ -42,33 +43,47 @@ const articleSchema = z.object({
     .min(50, { message: "Content must be at least 50 characters" }),
   tags: z.string().optional(),
 });
-
+type ArticleUploadPayload = {
+  title: string;
+  content: string;
+  tags?: string[] | undefined;
+  image?: string | null;
+  fileType?: string;
+  published: boolean;
+  id: string;
+  slug: string;
+  likes: number;
+  views: number;
+  readTime: number;
+  commentsCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: string;
+  authorSlug: string;
+};
 type ArticleFormValues = z.infer<typeof articleSchema>;
 
 export default function Editor() {
   const { articleId } = useParams<{ articleId: string }>();
 
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [article, setArticle] = useState<Article | null>();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const getArticle = async () => {
-      try {
-        const response = await api.get(`/articles/${articleId}`);
-        setArticle(response.data);
-        setImagePreview(response.data.image);
-      } catch (error) {
-        console.error("An error occour: ", error);
-      }
-    };
-    getArticle();
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["articles", articleId],
+    queryFn: async (): Promise<Article> => {
+      const response = await api.get(`/articles/${articleId}`);
+      setImagePreview(response.data.image);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!articleId,
+  });
 
   const {
     register,
@@ -76,14 +91,13 @@ export default function Editor() {
     watch,
     setValue,
     getValues,
-    reset,
     formState: { errors },
   } = useForm<ArticleFormValues>({
     resolver: zodResolver(articleSchema),
     values: {
-      title: article?.title ?? "",
-      content: article?.content ?? "",
-      tags: article?.tags.join(", ") ?? "",
+      title: data?.title ?? "",
+      content: data?.content ?? "",
+      tags: Array.isArray(data?.tags) ? data.tags.join(", ") : "",
     },
   });
 
@@ -103,70 +117,60 @@ export default function Editor() {
   };
 
   const saveArticle = async (isPublished: boolean) => {
-    setIsLoading(true);
-    try {
-      const data = getValues();
-      const inputUser: {
-        title: string;
-        content: string;
-        tags?: string[] | undefined;
-        image?: string | null;
-        fileType?: string;
-        published: boolean;
-        id: string;
-        slug: string;
-        likes: number;
-        views: number;
-        readTime: number;
-        commentsCount: number;
-        createdAt: Date;
-        updatedAt: Date;
-        authorId: string;
-        authorSlug: string;
-      } = {
-        ...data,
-        tags: data.tags ? data.tags.split(",").map((tag) => tag.trim()) : [],
-        published: isPublished,
-        id: article!.id,
-        slug: article!.slug,
-        likes: article!.likes,
-        views: article!.views,
-        readTime: article!.readTime,
-        commentsCount: article!.commentsCount,
-        createdAt: article!.createdAt,
-        updatedAt: article!.updatedAt,
-        authorId: article!.authorId,
-        authorSlug: article!.authorSlug,
-      };
-      if (imageFile) {
-        inputUser.image = imageFile.name;
-        inputUser.fileType = imageFile.type;
-      }
-      const response = await api.put(`/articles/${articleId}`, inputUser);
+    const newArticleData = getValues();
+    const articleUploadPayload: ArticleUploadPayload = {
+      ...newArticleData,
+      tags: newArticleData.tags
+        ? newArticleData.tags.split(",").map((tag) => tag.trim())
+        : [],
+      published: isPublished,
+      id: data!.id,
+      slug: data!.slug,
+      likes: data!.likes,
+      views: data!.views,
+      readTime: data!.readTime,
+      commentsCount: data!.commentsCount,
+      createdAt: data!.createdAt,
+      updatedAt: data!.updatedAt,
+      authorId: data!.authorId,
+      authorSlug: data!.authorSlug,
+    };
+    if (imageFile) {
+      articleUploadPayload.image = imageFile.name;
+      articleUploadPayload.fileType = imageFile.type;
+    }
+    saveArticleMutation.mutateAsync(articleUploadPayload);
+  };
 
-      const uploadUrl = await response.data;
-      if (uploadUrl) {
-        await axios.put(uploadUrl, imageFile, {
+  const saveArticleMutation = useMutation({
+    mutationFn: async (newArticle: ArticleUploadPayload) => {
+      const response = await api.put(`/articles/${articleId}`, newArticle);
+      return response.data;
+    },
+    onSuccess: (data, newArticle) => {
+      if (data.uploadUrl) {
+        axios.put(data.uploadUrl, imageFile, {
           headers: {
             "Content-Type": imageFile?.type,
           },
         });
       }
-      reset();
-      if (isPublished)
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      queryClient.invalidateQueries({ queryKey: ["articles", articleId] });
+      if (newArticle.published)
         toast.success("Your article has been published successfully.");
-      if (!isPublished) {
-        toast.info("Your article has been saved successfully.");
+      if (!newArticle.published) {
+        toast.success("Your article has been saved successfully.");
       }
-      router.push("/profile/myarticles");
-    } catch (error) {
-      console.error("Error while publishing article: ", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
       setPublishDialogOpen(false);
-    }
-  };
+      router.push("/profile/myarticles");
+    },
+    onError: (error) => {
+      console.error("Error creating article :", error);
+      toast.error("Something went wrong. Please try again.");
+      setPublishDialogOpen(false);
+    },
+  });
 
   const validateAndOpenPublishDialog = () => {
     if (!watchTitle || watchTitle.length < 5) {
@@ -209,20 +213,25 @@ export default function Editor() {
     }
   };
   const handleDeleteArticle = async () => {
-    if (!article?.id) return;
-    setIsLoading(true);
-    try {
-      await api.delete(`/articles/${article?.id}`);
-      toast.success("Article deleted");
-      router.push("/profile/myarticles");
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error("Error while deleting article: ", error);
-    } finally {
-      setIsLoading(false);
-      setDeleteDialogOpen(false);
-    }
+    if (!data?.id) return;
+    deleteArticleMutation.mutate();
   };
+
+  const deleteArticleMutation = useMutation({
+    mutationFn: async () => {
+      await api.delete(`/articles/${data?.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["articles", articleId] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      setDeleteDialogOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting article :", error);
+      toast.error("Something went wrong. Please try again.");
+      setDeleteDialogOpen(false);
+    },
+  });
 
   const parsedTags = watchTags
     ? watchTags
@@ -235,11 +244,11 @@ export default function Editor() {
     <section className="">
       <h1 className="mb-8 flex justify-between gap-4 font-main text-3xl font-bold tracking-tight text-custom-text-primary">
         Edit Article
-        {getStatusBadge(article!)}
+        {getStatusBadge(data!)}
       </h1>
       <form
         onSubmit={handleSubmit(() => {
-          onSave(article?.published ?? false);
+          onSave(data?.published ?? false);
         })}
       >
         <Card className="border-0 bg-custom-background shadow-none sm:border-[0.01rem] sm:shadow-lg dark:border-none md:dark:bg-zinc-900">
@@ -251,7 +260,7 @@ export default function Editor() {
                 {...register("title")}
                 placeholder="Enter your article title"
                 className="mt-2 mb-0.5 text-lg"
-                disabled={isLoading}
+                disabled={saveArticleMutation.isPending}
               />
               <span className="h-5 text-sm">
                 {errors.title && (
@@ -280,7 +289,7 @@ export default function Editor() {
                   }
                 }}
                 imagePreview={imagePreview}
-                isLoading={isLoading}
+                isLoading={saveArticleMutation.isPending}
               />
             </section>
             <section className="grid">
@@ -309,7 +318,7 @@ export default function Editor() {
                 {...register("tags")}
                 placeholder="nextjs, react, webdev (comma separated)"
                 className="mt-2 mb-0.5"
-                disabled={isLoading}
+                disabled={saveArticleMutation.isPending}
               />
               <span className="h-5 text-sm">
                 <p className="text-xs text-custom-text-light">
@@ -324,7 +333,7 @@ export default function Editor() {
               variant="outline"
               onClick={() => router.back()}
               className="border-[0.01rem]"
-              disabled={isLoading}
+              disabled={saveArticleMutation.isPending}
             >
               Cancel
             </Button>
@@ -334,9 +343,9 @@ export default function Editor() {
                 variant="destructive"
                 className="border-[0.01rem]"
                 onClick={() => setDeleteDialogOpen(true)}
-                disabled={isLoading}
+                disabled={saveArticleMutation.isPending}
               >
-                {isLoading ? (
+                {saveArticleMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                 ) : (
                   <Trash2 />
@@ -344,14 +353,14 @@ export default function Editor() {
                 Delete Article
               </Button>
 
-              {article?.published ? (
+              {data?.published ? (
                 <Button
                   type="button"
                   className="bg-amber-400 text-custom-text-primary hover:bg-amber-500"
                   onClick={() => setUnpublishDialogOpen(true)}
-                  disabled={isLoading}
+                  disabled={saveArticleMutation.isPending}
                 >
-                  {isLoading && (
+                  {saveArticleMutation.isPending && (
                     <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                   )}
                   <NavigationOff />
@@ -362,9 +371,9 @@ export default function Editor() {
                   type="button"
                   className="bg-green-700 hover:bg-green-600"
                   onClick={validateAndOpenPublishDialog}
-                  disabled={isLoading}
+                  disabled={saveArticleMutation.isPending}
                 >
-                  {isLoading && (
+                  {saveArticleMutation.isPending && (
                     <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                   )}
                   <Send />
@@ -375,9 +384,9 @@ export default function Editor() {
                 type="submit"
                 variant="outline"
                 className="border-[0.01rem]"
-                disabled={isLoading}
+                disabled={saveArticleMutation.isPending}
               >
-                {isLoading ? (
+                {saveArticleMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                 ) : (
                   <Save />
@@ -439,7 +448,7 @@ export default function Editor() {
                 variant="outline"
                 onClick={() => setPublishDialogOpen(false)}
                 className="border-[0.01rem]"
-                disabled={isLoading}
+                disabled={saveArticleMutation.isPending}
               >
                 Cancel
               </Button>
@@ -447,10 +456,10 @@ export default function Editor() {
                 onClick={() => {
                   onPublish(true);
                 }}
-                disabled={isLoading}
+                disabled={saveArticleMutation.isPending}
                 className="bg-green-700 hover:bg-green-600"
               >
-                {isLoading ? (
+                {saveArticleMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
                 ) : (
                   "Confirm & Publish"
@@ -467,7 +476,7 @@ export default function Editor() {
             <DialogDescription>
               Are you sure you want to delete{" "}
               <span className="font-bold text-custom-text-primary">
-                "{article?.title}"
+                "{data?.title}"
               </span>{" "}
               ? This action cannot be undone and will permanently delete this
               article.
@@ -489,17 +498,17 @@ export default function Editor() {
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
               className="border-[0.01rem] text-custom-text-primary"
-              disabled={isLoading}
+              disabled={deleteArticleMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteArticle}
-              disabled={isLoading}
+              disabled={deleteArticleMutation.isPending}
               className="w-full sm:w-auto"
             >
-              {isLoading ? (
+              {deleteArticleMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 "Yes, delete article"
@@ -518,7 +527,7 @@ export default function Editor() {
             <DialogDescription>
               Are you sure you want to unpublish{" "}
               <span className="font-bold text-custom-text-primary">
-                "{article?.title}"
+                "{data?.title}"
               </span>{" "}
               ? You can republish it at any time.
             </DialogDescription>
@@ -541,16 +550,16 @@ export default function Editor() {
               variant="outline"
               onClick={() => setUnpublishDialogOpen(false)}
               className="border-[0.01rem] text-custom-text-primary"
-              disabled={isLoading}
+              disabled={saveArticleMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               onClick={() => unPublish(false)}
-              disabled={isLoading}
+              disabled={saveArticleMutation.isPending}
               className="w-full bg-amber-600 hover:bg-amber-500 sm:w-auto"
             >
-              {isLoading ? (
+              {saveArticleMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin transition duration-1000" />
               ) : (
                 "Yes, unpublish article"
