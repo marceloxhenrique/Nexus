@@ -33,7 +33,7 @@ import { api } from "@/utils/api";
 import { ImageUploader } from "@/components/ImageUploader";
 import TextEditor from "@/components/TextEditor";
 import { Article } from "@prisma/client";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const articleSchema = z.object({
@@ -167,7 +167,11 @@ export default function Editor() {
     },
     onError: (error) => {
       console.error("Error creating article :", error);
-      toast.error("Something went wrong. Please try again.");
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
       setPublishDialogOpen(false);
     },
   });

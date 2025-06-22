@@ -3,8 +3,8 @@ import { authClient } from "@/lib/auth-client";
 import { UserWithArticles } from "@/lib/types";
 
 import { api } from "@/utils/api";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, ReactNode, useState } from "react";
 
 type UserType = {
   user: UserWithArticles | undefined;

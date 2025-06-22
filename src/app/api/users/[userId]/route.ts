@@ -8,6 +8,10 @@ import {
 } from "../../services/userService";
 import { getSession } from "@/utils/session";
 import { generatePreSignedUrl } from "@/utils/s3Service";
+import {
+  addPreSignedUrl,
+  canGeneratePreSignedUrl,
+} from "../../services/preSignedUrlService";
 
 export async function GET(
   req: NextRequest,
@@ -51,6 +55,12 @@ export async function PUT(
         { status: 200 },
       );
     }
+    if (!(await canGeneratePreSignedUrl(session.session.userId)))
+      return NextResponse.json(
+        { error: "You have reached the limit of images uploaded per day" },
+        { status: 403 },
+      );
+
     const fileKey = `avatar/${Date.now()}-${user.slug}-${updateData.avatar}`
       .replace(/\s+/g, "-")
       .toLowerCase();
@@ -59,6 +69,7 @@ export async function PUT(
       fileKey,
       updateData.fileType,
     );
+    await addPreSignedUrl(session.session.userId);
     await updateUser(session.session.userId, updateData);
 
     return NextResponse.json({ uploadUrl: uploadUrl }, { status: 200 });

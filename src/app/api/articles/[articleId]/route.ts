@@ -9,6 +9,10 @@ import { Article, User } from "@prisma/client";
 import { getSession } from "@/utils/session";
 import { generatePreSignedUrl } from "@/utils/s3Service";
 import { sanitizeInput } from "@/utils/sanitize";
+import {
+  addPreSignedUrl,
+  canGeneratePreSignedUrl,
+} from "../../services/preSignedUrlService";
 
 export async function GET(
   req: NextRequest,
@@ -61,6 +65,11 @@ export async function PUT(
         { status: 201 },
       );
     }
+    if (!(await canGeneratePreSignedUrl(user.id)))
+      return NextResponse.json(
+        { error: "You have reached the limit of images uploaded per day" },
+        { status: 403 },
+      );
     const fileKey = `uploads/${Date.now()}-${user.slug}-${article.title}`
       .replace(/\s+/g, "-")
       .toLowerCase();
@@ -69,6 +78,7 @@ export async function PUT(
       fileKey,
       articleInput.fileType,
     );
+    await addPreSignedUrl(user.id);
     await updateArticle(article, fileKey);
 
     return NextResponse.json({ uploadUrl: uploadUrl }, { status: 200 });

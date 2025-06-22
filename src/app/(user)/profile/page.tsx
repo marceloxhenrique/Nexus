@@ -29,7 +29,7 @@ import * as z from "zod";
 import { api } from "@/utils/api";
 import { UserContext } from "@/contexts/UserContext";
 import { toast } from "sonner";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import Image from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -100,7 +100,11 @@ export default function ProfileForm() {
     },
     onError: (error) => {
       console.error("Error while updating profile: ", error);
-      toast.error("Something went wrong. Please try again.");
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     },
   });
 

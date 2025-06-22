@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import TextEditor from "./TextEditor";
 import { ImageUploader } from "./ImageUploader";
 import { api } from "@/utils/api";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const articleSchema = z.object({
@@ -120,7 +120,11 @@ export function NewArticleEditor() {
     },
     onError: (error) => {
       console.error("Error creating article :", error);
-      toast.error("Something went wrong. Please try again.");
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
       setPublishDialogOpen(false);
     },
   });

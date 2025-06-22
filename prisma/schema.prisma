@@ -37,8 +37,19 @@ model User {
   following      Follow[]       @relation("UserFollowing")
   likedArticles  ArticleLikes[] @relation(name: "UserLikedArticles")
   Comment        Comment[]      @relation("CommentAuthor")
+  PreSignedUrl   PreSignedUrl[] @relation("PreSignedUrl")
 
   @@map("user")
+}
+
+model PreSignedUrl {
+  id        String   @id @default(uuid())
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(name: "PreSignedUrl", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("pre_signed_url")
 }
 
 model Follow {
