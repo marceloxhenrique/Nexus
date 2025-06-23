@@ -51,9 +51,11 @@ type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export default function AccountForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordVisibility, setPasswordVisibility] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const user: UserWithArticles | undefined = useContext(UserContext)?.user;
   const router = useRouter();
@@ -106,6 +108,15 @@ export default function AccountForm() {
     }
   };
 
+  const togglePasswordVisibility = (
+    password: "currentPassword" | "newPassword" | "confirmPassword",
+  ) => {
+    setPasswordVisibility({
+      ...passwordVisibility,
+      [password]: !passwordVisibility[password],
+    });
+  };
+
   return (
     <section className="space-y-6 text-base">
       <Card className="border-0 bg-custom-background text-base shadow-none sm:border-[0.01rem] sm:shadow-md dark:border-none md:dark:bg-zinc-900">
@@ -147,16 +158,22 @@ export default function AccountForm() {
               <div className="relative mt-2 mb-0.5 flex items-center">
                 <Input
                   id="currentPassword"
-                  type={showCurrentPassword ? "text" : "password"}
+                  type={
+                    passwordVisibility.currentPassword ? "text" : "password"
+                  }
                   {...register("currentPassword")}
                   disabled={isLoading}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  onClick={() => togglePasswordVisibility("currentPassword")}
                   className="absolute right-4 cursor-pointer text-gray-500"
                 >
-                  {showCurrentPassword ? <FaEye /> : <FaEyeSlash />}
+                  {passwordVisibility.currentPassword ? (
+                    <FaEye />
+                  ) : (
+                    <FaEyeSlash />
+                  )}
                 </button>
               </div>
               <span className="h-5 text-sm">
@@ -172,16 +189,16 @@ export default function AccountForm() {
               <div className="relative mt-2 mb-0.5 flex items-center">
                 <Input
                   id="newPassword"
-                  type={showNewPassword ? "text" : "password"}
+                  type={passwordVisibility.newPassword ? "text" : "password"}
                   {...register("newPassword")}
                   disabled={isLoading}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  onClick={() => togglePasswordVisibility("newPassword")}
                   className="absolute right-4 cursor-pointer text-gray-500"
                 >
-                  {showNewPassword ? <FaEye /> : <FaEyeSlash />}
+                  {passwordVisibility.newPassword ? <FaEye /> : <FaEyeSlash />}
                 </button>
               </div>
               <span className="h-5 text-sm">
@@ -197,16 +214,22 @@ export default function AccountForm() {
               <div className="relative mt-2 mb-0.5 flex items-center">
                 <Input
                   id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={
+                    passwordVisibility.confirmPassword ? "text" : "password"
+                  }
                   {...register("confirmPassword")}
                   disabled={isLoading}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() => togglePasswordVisibility("confirmPassword")}
                   className="absolute right-4 cursor-pointer text-gray-500"
                 >
-                  {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
+                  {passwordVisibility.confirmPassword ? (
+                    <FaEye />
+                  ) : (
+                    <FaEyeSlash />
+                  )}
                 </button>
               </div>
               <span className="h-5 text-sm">

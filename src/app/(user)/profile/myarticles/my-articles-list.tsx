@@ -18,6 +18,7 @@ import { api } from "@/utils/api";
 import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserContext } from "@/contexts/UserContext";
+import Loading from "./loading";
 
 export function MyArticlesList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -26,7 +27,7 @@ export function MyArticlesList() {
   const user = useContext(UserContext)?.user;
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["articles"],
     queryFn: async (): Promise<Article[]> => {
       const response = await api.get(`/users/${user?.id}`);
@@ -81,10 +82,10 @@ export function MyArticlesList() {
       );
     }
   };
-
+  if (isLoading) return <Loading />;
   return (
     <div className="space-y-4">
-      {!data || data.length === 0 ? (
+      {data?.length === 0 ? (
         <div className="rounded-md bg-muted p-8 text-center">
           <p className="text-custom-text-light">
             You haven't written any articles yet.
@@ -96,7 +97,7 @@ export function MyArticlesList() {
           </Link>
         </div>
       ) : (
-        data.map((article) => (
+        data?.map((article) => (
           <div
             key={article.id}
             className="flex flex-col gap-6 border-b border-gray-100 py-6 last:border-0 md:flex-row"

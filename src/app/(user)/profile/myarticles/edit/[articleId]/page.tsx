@@ -33,7 +33,7 @@ import { api } from "@/utils/api";
 import { ImageUploader } from "@/components/ImageUploader";
 import TextEditor from "@/components/TextEditor";
 import { Article } from "@prisma/client";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const articleSchema = z.object({
@@ -73,7 +73,7 @@ export default function Editor() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
-
+  const NEXT_PUBLIC_AWS_URL = process.env.NEXT_PUBLIC_AWS_URL;
   const { data } = useQuery({
     queryKey: ["articles", articleId],
     queryFn: async (): Promise<Article> => {
@@ -81,7 +81,7 @@ export default function Editor() {
       setImagePreview(response.data.image);
       return response.data;
     },
-    staleTime: 5 * 60 * 1000,
+    // staleTime: 5 * 60 * 1000,
     enabled: !!articleId,
   });
 
@@ -167,7 +167,11 @@ export default function Editor() {
     },
     onError: (error) => {
       console.error("Error creating article :", error);
-      toast.error("Something went wrong. Please try again.");
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
       setPublishDialogOpen(false);
     },
   });
@@ -422,7 +426,9 @@ export default function Editor() {
                     Cover Image
                   </h3>
                   <Image
-                    src={imagePreview || "/placeholder.svg"}
+                    width={500}
+                    height={300}
+                    src={NEXT_PUBLIC_AWS_URL + imagePreview}
                     alt="Article cover"
                     className="h-32 w-full rounded-md object-cover"
                   />
