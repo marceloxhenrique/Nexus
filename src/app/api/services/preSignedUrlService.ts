@@ -23,3 +23,14 @@ export async function addPreSignedUrl(userId: string) {
   });
   return preSignedUrl;
 }
+
+export async function deleteExpiredPreSignedUrl() {
+  const preSignedUrl = await db.preSignedUrl.deleteMany({
+    where: {
+      createdAt: {
+        lt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24),
+      },
+    },
+  });
+  return preSignedUrl;
+}
