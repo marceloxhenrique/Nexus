@@ -1,5 +1,5 @@
 <div align="center">
-	<img width="600" alt="Nexus" src="https://github.com/user-attachments/assets/4a747a35-51f7-40af-9a20-47d753b3ace7" />
+	<img width="720" alt="Nexus" src="https://github.com/user-attachments/assets/5d6a499d-7a1b-4783-ad02-cea13374f369" />
 </div>
 
 # [Nexus](https://)
@@ -8,12 +8,16 @@
 
 ## Technologies
 
-![TYPESCRIPT_BADGE](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=fff)
-![ReactJS](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Next_JS](https://img.shields.io/badge/Next.js-000?style=for-the-badge&logo=nextdotjs&logoColor=fff)
-![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Shadcn/ui](https://img.shields.io/badge/shadcn/ui-fff?style=for-the-badge&logo=shadcnui&logoColor=000)
-![Zod](https://img.shields.io/badge/zod-000?style=for-the-badge&logo=zod&logoColor=3068B7)
+![TYPESCRIPT_BADGE](https://img.shields.io/badge/TypeScript-3178C6?&logo=typescript&logoColor=fff)
+![ReactJS](https://img.shields.io/badge/React-20232A?&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?&logo=tailwind-css&logoColor=white)
+![Shadcn/ui](https://img.shields.io/badge/shadcn/ui-fff?&logo=shadcnui&logoColor=000)
+![Zod](https://img.shields.io/badge/zod-000?&logo=zod&logoColor=3068B7)
+![React Query](https://img.shields.io/badge/Tanstack%20Query-FF4154?logo=reactquery&logoColor=fff)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
+![AWS](https://custom-icon-badges.demolab.com/badge/AWS-%23FF9900.svg?logo=aws&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-%23000000.svg?logo=vercel&logoColor=white)
 
 ## Prerequisites
 
@@ -42,20 +46,62 @@ yarn install
 Create a `.env` file in the root directory and add your credentials:
 
 ```bash
+# Required: Used by both Prisma and the app to connect to your database
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 
+#Only needed if you're running Postgres using Docker
 POSTGRES_USER=johndoe
 POSTGRES_PASSWORD=randompassword
 POSTGRES_DB=mydb
 
+# Backend API URL
 NEXT_PUBLIC_BACKEND_URL=http://localhost:3000/api
 
+# BetterAuth configuration
 BETTER_AUTH_SECRET=YOUR_SECRET
 BETTER_AUTH_URL=http://localhost:3000
 
+# AWS (used for image uploads)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_BUCKET_NAME=
+AWS_BUCKET_REGION=
+NEXT_PUBLIC_AWS_URL=
+
+# OAuth credentials
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+# Email (for notifications/auth)
+USER_GMAIL=
+PASSWORD_GMAIL=
+
+# Cron job security
+CRON_SECRET=
+
 ```
 
-### 4. Run the development server
+### Note:
+
+If you're using Docker to run your database (recommended for local development), the **POSTGRES_USER**, **POSTGRES_PASSWORD**, and **POSTGRES_DB** variables will be used to initialize the container.
+
+You still must set **DATABASE_URL** — it's required by both Prisma and the application to connect to the database.
+
+Start the database container with:
+
+```bash
+docker compose up -d
+```
+
+### 4. Run prisma migrations
+
+```bash
+npx prisma migrate dev
+```
+
+### 5. Run the development server
 
 ```bash
 npm run dev
@@ -68,8 +114,13 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Features
 
 - **Write & Publish** – Create and share blog posts easily.
-- **User Authentication** – Secure login and registration powered by Clerk.
+- **User Authentication** – Secure login and registration powered by BetterAuth.
 - **Rich Content** – Format your articles with images, links, and code blocks.
+- **Comments** – Readers can comment on articles and engage in discussions.
+- **User Profiles** – Personalized profile pages showcasing user info and articles.
+- **Image Uploads** – Drag-and-drop images upload with AWS S3 integration.
+- **Likes & Following** – Users can like articles and follow their favorite authors.
+- **Blog Experience** – A clean, Medium-inspired blogging platform focused on reading and writing.
 
 ## Contribute
 
