@@ -7,7 +7,7 @@ import {
 import { getUserById } from "../../services/userService";
 import { Article, User } from "@prisma/client";
 import { getSession } from "@/utils/session";
-import { generatePreSignedUrl } from "@/utils/s3Service";
+import { deleteFileFromS3, generatePreSignedUrl } from "@/utils/s3Service";
 import { sanitizeInput } from "@/utils/sanitize";
 import {
   addPreSignedUrl,
@@ -70,6 +70,9 @@ export async function PUT(
         { error: "You have reached the limit of images uploaded per day" },
         { status: 403 },
       );
+    if (article?.image) {
+      deleteFileFromS3(article.image);
+    }
     const fileKey = `uploads/${Date.now()}-${user.slug}-${article.title}`
       .replace(/\s+/g, "-")
       .toLowerCase();

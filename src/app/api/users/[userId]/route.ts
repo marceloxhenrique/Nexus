@@ -7,7 +7,7 @@ import {
   updateUser,
 } from "../../services/userService";
 import { getSession } from "@/utils/session";
-import { generatePreSignedUrl } from "@/utils/s3Service";
+import { deleteFileFromS3, generatePreSignedUrl } from "@/utils/s3Service";
 import {
   addPreSignedUrl,
   canGeneratePreSignedUrl,
@@ -61,6 +61,7 @@ export async function PUT(
         { status: 403 },
       );
 
+    if (user.avatar) deleteFileFromS3(user.avatar);
     const fileKey = `avatar/${Date.now()}-${user.slug}-${updateData.avatar}`
       .replace(/\s+/g, "-")
       .toLowerCase();
