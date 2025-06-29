@@ -84,7 +84,6 @@ export async function updateArticle(article: Article, imageUrl?: string) {
     content: article.content,
     tags: article.tags,
     published: article.published,
-
     readTime: Math.ceil(article.content.trim().split(/\s+/).length / 200),
   };
 
