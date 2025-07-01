@@ -2,9 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
-
 import { Providers } from "@/utils/providers";
 import Navbar from "@/components/Navbar";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Nexus – A Blog for Developers & Creators",
@@ -38,6 +38,7 @@ export default function RootLayout({
             <Footer></Footer>
           </section>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
