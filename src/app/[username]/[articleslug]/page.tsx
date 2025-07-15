@@ -78,22 +78,23 @@ function ArticlePage() {
         {data.title}
       </h1>
       <section className="flex items-center gap-3 py-8 text-sm text-custom-text-light">
-        <Avatar className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-[0.01rem] border-neutral-800 bg-zinc-200 text-sm hover:opacity-80 dark:border-white">
-          <Link href={`/@${data.authorSlug}`} className="flex size-full">
+        <Link href={`/@${data.authorSlug}`} className="flex items-center gap-2">
+          <Avatar className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-[0.01rem] border-neutral-800 bg-zinc-200 text-sm hover:opacity-80 dark:border-white">
             <AvatarImage
-              src={NEXT_PUBLIC_AWS_URL + data.author.avatar!}
+              src={
+                data.author?.avatar
+                  ? NEXT_PUBLIC_AWS_URL + data.author.avatar
+                  : undefined
+              }
               alt={"Author avatar"}
             />
             <AvatarFallback className="flex w-full items-center justify-center">
-              {data.author.name.slice(0, 2).toUpperCase()}
+              {data.author?.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
-          </Link>
-        </Avatar>
-        <Link
-          href={`/@${data.authorSlug}`}
-          className="font-medium text-custom-text-primary hover:underline"
-        >
-          {data.author?.name}
+          </Avatar>
+          <p className="font-medium text-custom-text-primary hover:underline">
+            {data.author?.name}
+          </p>
         </Link>
         <span className="flex items-center gap-1">
           {new Date(data.createdAt).toLocaleDateString("en-IN", {
