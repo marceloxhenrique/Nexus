@@ -29,7 +29,7 @@ export default function MostRead({
                     {article.author?.name?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                {article.author.name}
+                {article.author?.name}
               </span>
               <p className="text-md pt-1 font-semibold text-custom-text-primary">
                 {article.title}

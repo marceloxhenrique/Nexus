@@ -5,11 +5,10 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@100;300;400;500;600&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
-/* 
+
 * {
   @apply transition-colors duration-400;
-} */
-
+}
 
 :root {
   --color-custom-primary: #181610;
@@ -142,8 +141,6 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-
-
 /* Custom styles for the rich text editor */
 .rich-content h1 {
   @apply text-3xl font-bold mt-6 mb-4;
@@ -154,7 +151,7 @@
 }
 
 .rich-content p {
-  @apply my-4 text-base leading-relaxed text-custom-text-light;
+  @apply text-lg text-custom-text-light;
 }
 
 .rich-content ul {
@@ -247,8 +244,6 @@
   overflow-wrap: break-word;
   word-break: break-word;
 }
-
-
 
 .ql-toolbar {
   width: 100%;
