@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { deleteFileFromS3 } from "@/utils/s3Service";
+import { sanitizeArticleSlug } from "@/utils/sanitize";
 import { User, Article } from "@prisma/client";
 
 export async function getAllArticles() {
@@ -60,7 +61,7 @@ export async function createArticle(
 ) {
   const newArticle: CreateArticleInput = {
     title: article.title,
-    slug: article.title.replace(/\s+/g, "-").toLowerCase(),
+    slug: sanitizeArticleSlug(article.title),
     content: article.content,
     tags: article.tags,
     published: article.published,
@@ -80,7 +81,7 @@ export async function createArticle(
 export async function updateArticle(article: Article, imageUrl?: string) {
   const newArticle: UpdateArticleInput = {
     title: article.title,
-    slug: article.title.replace(/\s+/g, "-").toLowerCase(),
+    slug: sanitizeArticleSlug(article.title),
     content: article.content,
     tags: article.tags,
     published: article.published,

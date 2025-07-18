@@ -12,6 +12,7 @@ import {
   addPreSignedUrl,
   canGeneratePreSignedUrl,
 } from "../../services/preSignedUrlService";
+import { sanitizeArticleSlug } from "@/utils/sanitize";
 
 export async function GET(
   req: NextRequest,
@@ -62,9 +63,9 @@ export async function PUT(
       );
 
     if (user.avatar) deleteFileFromS3(user.avatar);
-    const fileKey = `avatar/${Date.now()}-${user.slug}-${updateData.avatar}`
-      .replace(/\s+/g, "-")
-      .toLowerCase();
+    const fileKey = sanitizeArticleSlug(
+      `avatar/${Date.now()}-${user.slug}-${updateData.avatar}`,
+    );
     updateData.avatar = fileKey;
     const { uploadUrl } = await generatePreSignedUrl(
       fileKey,

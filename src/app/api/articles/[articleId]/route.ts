@@ -8,7 +8,7 @@ import { getUserById } from "../../services/userService";
 import { Article, User } from "@prisma/client";
 import { getSession } from "@/utils/session";
 import { deleteFileFromS3, generatePreSignedUrl } from "@/utils/s3Service";
-import { sanitizeInput } from "@/utils/sanitize";
+import { sanitizeArticleSlug, sanitizeInput } from "@/utils/sanitize";
 import {
   addPreSignedUrl,
   canGeneratePreSignedUrl,
@@ -73,9 +73,9 @@ export async function PUT(
     if (article?.image) {
       deleteFileFromS3(article.image);
     }
-    const fileKey = `uploads/${Date.now()}-${user.slug}-${article.title}`
-      .replace(/\s+/g, "-")
-      .toLowerCase();
+    const fileKey = sanitizeArticleSlug(
+      `uploads/${Date.now()}-${user.slug}-${article.title}`,
+    );
 
     const { uploadUrl } = await generatePreSignedUrl(
       fileKey,
