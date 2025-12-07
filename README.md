@@ -87,7 +87,7 @@ CRON_SECRET=
 
 If you're using Docker to run your database (recommended for local development), the **POSTGRES_USER**, **POSTGRES_PASSWORD**, and **POSTGRES_DB** variables will be used to initialize the container.
 
-You still must set **DATABASE_URL** — it's required by both Prisma and the application to connect to the database.
+You still must set **DATABASE_URL**, it's required by both Prisma and the application to connect to the database.
 
 Start the database container with:
 
@@ -113,14 +113,14 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Features
 
-- **Write & Publish** – Create and share blog posts easily.
-- **User Authentication** – Secure login and registration powered by BetterAuth.
-- **Rich Content** – Format your articles with images, links, and code blocks.
-- **Comments** – Readers can comment on articles and engage in discussions.
-- **User Profiles** – Personalized profile pages showcasing user info and articles.
-- **Image Uploads** – Drag-and-drop images upload with AWS S3 integration.
-- **Likes & Following** – Users can like articles and follow their favorite authors.
-- **Blog Experience** – A clean, Medium-inspired blogging platform focused on reading and writing.
+- **Write & Publish**: Create and share blog posts easily.
+- **User Authentication**: Secure login and registration powered by BetterAuth.
+- **Rich Content**: Format your articles with images, links, and code blocks.
+- **Comments**: Readers can comment on articles and engage in discussions.
+- **User Profiles**: Personalized profile pages showcasing user info and articles.
+- **Image Uploads**: Drag-and-drop images upload with AWS S3 integration.
+- **Likes & Following**: Users can like articles and follow their favorite authors.
+- **Blog Experience**: A clean, Medium-inspired blogging platform focused on reading and writing.
 
 ## Contribute
 
