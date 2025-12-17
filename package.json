@@ -27,7 +27,7 @@
     "@tanstack/react-query-devtools": "^5.80.7",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.8.4",
-    "better-auth": "^1.2.4",
+    "better-auth": "1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dompurify": "^3.2.6",
